@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.metaforge</groupId>
+        <artifactId>metaforge-parent</artifactId>
+        <version>${revision}</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>metaforge-metadata</artifactId>
+    <packaging>pom</packaging>
+
+    <name>BC: Metadata Management</name>
+    <description>元数据管理 BC——元数据实体的创建、更新、版本追溯、结构合规校验、生命周期管理</description>
+
+    <modules>
+        <module>metaforge-metadata-api</module>
+        <module>metaforge-metadata-core</module>
+    </modules>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.metaforge</groupId>
+                <artifactId>metaforge-metadata-api</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.metaforge</groupId>
+                <artifactId>metaforge-metadata-core</artifactId>
+                <version>${revision}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+</project>

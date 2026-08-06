@@ -1,0 +1,427 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.metaforge</groupId>
+    <artifactId>metaforge-parent</artifactId>
+    <version>${revision}</version>
+    <packaging>pom</packaging>
+
+    <name>MetaForge Parent</name>
+    <description>MetaForge 全平台统一父 POM，提供依赖版本治理与构建规范</description>
+
+    <!-- 聚合的子模块 -->
+    <modules>
+        <module>metaforge-common</module>
+        <module>metaforge-framework</module>
+        <module>metaforge-server</module>
+        <module>metaforge-boot</module>
+        <module>metaforge-metamodel</module>
+        <module>metaforge-metadata</module>
+        <module>bc-sample</module>
+        <module>metaforge-graph</module>
+        <module>metaforge-compute-engine</module>
+        <module>metaforge-agent-cognition</module>
+    </modules>
+
+    <properties>
+        <!-- 项目编译基线 -->
+        <revision>1.0.0-SNAPSHOT</revision>
+        <java.version>21</java.version>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <!-- 核心依赖版本 — 全平台版本唯一权威源 -->
+        <spring-boot.version>3.4.3</spring-boot.version>
+        <spring-ai.version>1.1.2</spring-ai.version>
+        <jackson.version>2.18.2</jackson.version>
+        <caffeine.version>3.1.8</caffeine.version>
+        <postgresql.version>42.7.4</postgresql.version>
+        <flyway.version>10.22.0</flyway.version>
+        <testcontainers.version>1.20.4</testcontainers.version>
+        <hibernate.version>6.6.10.Final</hibernate.version>
+        <springdoc.version>2.7.0</springdoc.version>
+        <swagger-annotations.version>2.2.27</swagger-annotations.version>
+        <mapstruct.version>1.6.3</mapstruct.version>
+        <jackson-module-jsonSchema.version>2.18.2</jackson-module-jsonSchema.version>
+        <everit-json-schema.version>1.14.4</everit-json-schema.version>
+        <json-schema-validator.version>2.0.0</json-schema-validator.version>
+        <java-json-tools-validator.version>2.2.14</java-json-tools-validator.version>
+
+        <!-- 默认跳过 @Tag("integration") 测试 -->
+        <surefire.excludedGroups>integration</surefire.excludedGroups>
+
+        <!-- 插件版本 -->
+        <maven-enforcer-plugin.version>3.5.0</maven-enforcer-plugin.version>
+        <flatten-maven-plugin.version>1.6.0</flatten-maven-plugin.version>
+    </properties>
+
+    <!-- BOM 依赖管理 — 全平台依赖版本的唯一权威源 -->
+    <dependencyManagement>
+        <dependencies>
+            <!-- Spring Boot BOM -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- Spring AI BOM -->
+            <dependency>
+                <groupId>org.springframework.ai</groupId>
+                <artifactId>spring-ai-bom</artifactId>
+                <version>${spring-ai.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- Jackson BOM -->
+            <dependency>
+                <groupId>com.fasterxml.jackson</groupId>
+                <artifactId>jackson-bom</artifactId>
+                <version>${jackson.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- TestContainers BOM -->
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers-bom</artifactId>
+                <version>${testcontainers.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- 不包含在 BOM 内的独立版本声明 -->
+            <dependency>
+                <groupId>org.postgresql</groupId>
+                <artifactId>postgresql</artifactId>
+                <version>${postgresql.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.github.ben-manes.caffeine</groupId>
+                <artifactId>caffeine</artifactId>
+                <version>${caffeine.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-database-postgresql</artifactId>
+                <version>${flyway.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+                <version>${springdoc.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.swagger.core.v3</groupId>
+                <artifactId>swagger-annotations-jakarta</artifactId>
+                <version>${swagger-annotations.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers</artifactId>
+                <version>${testcontainers.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>junit-jupiter</artifactId>
+                <version>${testcontainers.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>postgresql</artifactId>
+                <version>${testcontainers.version}</version>
+            </dependency>
+
+            <!-- 内部模块版本由 ${revision} 统一管理 -->
+            <dependency>
+                <groupId>com.metaforge</groupId>
+                <artifactId>metaforge-common</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.metaforge</groupId>
+                <artifactId>metaforge-framework</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.metaforge</groupId>
+                <artifactId>metaforge-server</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.metaforge</groupId>
+                <artifactId>metaforge-boot</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.metaforge</groupId>
+                <artifactId>metaforge-metamodel-api</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.metaforge</groupId>
+                <artifactId>metaforge-metamodel-core</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.metaforge</groupId>
+                <artifactId>metaforge-metadata-api</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.metaforge</groupId>
+                <artifactId>metaforge-metadata-core</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.metaforge</groupId>
+                <artifactId>bc-sample</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.metaforge</groupId>
+                <artifactId>metaforge-graph</artifactId>
+                <version>${revision}</version>
+                <type>pom</type>
+            </dependency>
+            <dependency>
+                <groupId>com.metaforge</groupId>
+                <artifactId>metaforge-graph-api</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.metaforge</groupId>
+                <artifactId>metaforge-graph-core</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.metaforge</groupId>
+                <artifactId>metaforge-compute-engine-api</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.metaforge</groupId>
+                <artifactId>metaforge-compute-engine-core</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.metaforge</groupId>
+                <artifactId>metaforge-agent-cognition-api</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.metaforge</groupId>
+                <artifactId>metaforge-agent-cognition-core</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mapstruct</groupId>
+                <artifactId>mapstruct</artifactId>
+                <version>${mapstruct.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.module</groupId>
+                <artifactId>jackson-module-jsonSchema</artifactId>
+                <version>${jackson-module-jsonSchema.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.erosb</groupId>
+                <artifactId>everit-json-schema</artifactId>
+                <version>${everit-json-schema.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.networknt</groupId>
+                <artifactId>json-schema-validator</artifactId>
+                <version>${json-schema-validator.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.github.java-json-tools</groupId>
+                <artifactId>json-schema-validator</artifactId>
+                <version>${java-json-tools-validator.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <repositories>
+        <repository>
+            <id>spring-milestones</id>
+            <name>Spring Milestones</name>
+            <url>https://repo.spring.io/milestone</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
+    <build>
+        <plugins>
+            <!-- Flatten 插件：${revision} 变量在安装/部署时解析为实际版本号 -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
+                <version>${flatten-maven-plugin.version}</version>
+                <configuration>
+                    <flattenMode>oss</flattenMode>
+                    <updatePomFile>true</updatePomFile>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>flatten</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>flatten</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>flatten-clean</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+
+        <pluginManagement>
+            <plugins>
+                <!-- Spring Boot Maven 插件：打包可执行 JAR -->
+                <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                    <version>${spring-boot.version}</version>
+                </plugin>
+
+                <!-- 编译插件：强制 Java 21 -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.13.0</version>
+                    <configuration>
+                        <source>21</source>
+                        <target>21</target>
+                        <encoding>UTF-8</encoding>
+                        <parameters>true</parameters>
+                    </configuration>
+                </plugin>
+
+                <!-- Enforcer 插件：版本收敛与依赖规则强制校验 -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-enforcer-plugin</artifactId>
+                    <version>${maven-enforcer-plugin.version}</version>
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.codehaus.mojo</groupId>
+                            <artifactId>extra-enforcer-rules</artifactId>
+                            <version>1.9.0</version>
+                        </dependency>
+                    </dependencies>
+                    <executions>
+                        <execution>
+                            <id>enforce-versions</id>
+                            <goals>
+                                <goal>enforce</goal>
+                            </goals>
+                            <configuration>
+                                <rules>
+                                    <!-- 版本收敛：确保传递依赖版本统一 -->
+                                    <requireUpperBoundDeps/>
+
+                                    <!-- 禁止业务 BC 依赖 metaforge-boot -->
+                                    <bannedDependencies>
+                                        <searchTransitive>false</searchTransitive>
+                                        <excludes>
+                                            <exclude>com.metaforge:metaforge-boot</exclude>
+                                        </excludes>
+                                        <message>业务 BC 禁止依赖 metaforge-boot 启动模块。请依赖 metaforge-framework 获取工具层能力。</message>
+                                    </bannedDependencies>
+
+                                    <!-- 禁止 BC 声明 dependencyManagement -->
+                                    <banDependencyManagement>
+                                        <excludes>
+                                            <exclude>com.metaforge:*</exclude>
+                                        </excludes>
+                                    </banDependencyManagement>
+
+                                    <!-- 禁止 BC 覆盖核心版本属性 -->
+                                    <requireProperty>
+                                        <property>spring-boot.version</property>
+                                        <regex>${spring-boot.version}</regex>
+                                        <regexMessage>禁止覆盖 spring-boot.version。版本统一由 metaforge-parent BOM 管理。</regexMessage>
+                                    </requireProperty>
+                                    <requireProperty>
+                                        <property>postgresql.version</property>
+                                        <regex>${postgresql.version}</regex>
+                                        <regexMessage>禁止覆盖 postgresql.version。版本统一由 metaforge-parent BOM 管理。</regexMessage>
+                                    </requireProperty>
+                                    <requireProperty>
+                                        <property>jackson.version</property>
+                                        <regex>${jackson.version}</regex>
+                                        <regexMessage>禁止覆盖 jackson.version。版本统一由 metaforge-parent BOM 管理。</regexMessage>
+                                    </requireProperty>
+                                    <requireProperty>
+                                        <property>caffeine.version</property>
+                                        <regex>${caffeine.version}</regex>
+                                        <regexMessage>禁止覆盖 caffeine.version。版本统一由 metaforge-parent BOM 管理。</regexMessage>
+                                    </requireProperty>
+                                    <requireProperty>
+                                        <property>hibernate.version</property>
+                                        <regex>${hibernate.version}</regex>
+                                        <regexMessage>禁止覆盖 hibernate.version。版本统一由 metaforge-parent BOM 管理。</regexMessage>
+                                    </requireProperty>
+                                    <requireProperty>
+                                        <property>flyway.version</property>
+                                        <regex>${flyway.version}</regex>
+                                        <regexMessage>禁止覆盖 flyway.version。版本统一由 metaforge-parent BOM 管理。</regexMessage>
+                                    </requireProperty>
+                                    <requireProperty>
+                                        <property>testcontainers.version</property>
+                                        <regex>${testcontainers.version}</regex>
+                                        <regexMessage>禁止覆盖 testcontainers.version。版本统一由 metaforge-parent BOM 管理。</regexMessage>
+                                    </requireProperty>
+                                </rules>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+                <!-- Surefire 插件 -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>3.1.2</version>
+                    <configuration>
+                        <excludedGroups>${surefire.excludedGroups}</excludedGroups>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+    <profiles>
+        <!-- 整合测试 profile：需要 Docker 环境 -->
+        <profile>
+            <id>integration-test</id>
+            <properties>
+                <surefire.excludedGroups>none</surefire.excludedGroups>
+            </properties>
+        </profile>
+    </profiles>
+</project>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.metaforge</groupId>
+        <artifactId>metaforge-parent</artifactId>
+        <version>${revision}</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>bc-sample</artifactId>
+    <packaging>jar</packaging>
+
+    <name>BC Sample</name>
+    <description>示例业务 BC，演示标准接入流程：继承 parent → 依赖 framework → 注册到 boot → 配置应用名</description>
+
+    <dependencies>
+        <!-- 业务 BC 仅依赖 framework，版本由 BOM 管理 -->
+        <dependency>
+            <groupId>com.metaforge</groupId>
+            <artifactId>metaforge-framework</artifactId>
+        </dependency>
+
+        <!-- Swagger 注解（用于 OpenAPI 文档生成） -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+        </dependency>
+
+        <!-- 测试依赖 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>

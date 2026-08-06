@@ -1,0 +1,13 @@
+com.metaforge.server.config.VirtualThreadConfig
+com.metaforge.server.config.JacksonConfig
+com.metaforge.server.config.WebMvcConfig
+com.metaforge.server.config.LogConfig
+com.metaforge.server.config.CacheConfig
+com.metaforge.server.config.OpenApiConfig
+com.metaforge.server.config.DataSourceConfig
+com.metaforge.server.config.FlywayConfig
+com.metaforge.server.config.I18nConfig
+com.metaforge.server.config.ActuatorConfig
+com.metaforge.server.config.SecurityConfig
+com.metaforge.server.config.SchemaGuardConfig
+com.metaforge.server.spi.SpiRegistry

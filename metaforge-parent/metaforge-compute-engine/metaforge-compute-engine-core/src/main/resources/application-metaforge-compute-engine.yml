@@ -1,0 +1,44 @@
+# ============================================================================
+# metaforge-compute-engine BC 配置
+# ============================================================================
+# 语义查询与推理引擎——图遍历参数、传导规则、超时熔断配置
+# 所有属性前缀 metaforge.compute-engine.*
+# ============================================================================
+
+metaforge:
+  compute-engine:
+    traversal:
+      max-depth: 5
+      timeout-ms: 2000
+      max-result-count: 500
+    transitivity-rules:
+      - type: COMPOSITION
+        transitive: true
+        direction: forward
+        weight-strategy: multiply
+        max-depth: 5
+        description: "整体-部分层级传递，权重连乘表示约束强度或概率"
+      - type: DEPENDENCY_INFLUENCE
+        transitive: true
+        direction: forward
+        weight-strategy: multiply
+        max-depth: 2
+        description: "依赖链传导，权重乘以(0,1]衰减因子"
+      - type: PROCESS_SEQUENCE
+        transitive: true
+        direction: forward
+        weight-strategy: add
+        max-depth: 5
+        description: "步长/耗时/成本累加，计算路径总长"
+      - type: ASSOCIATION_REFERENCE
+        transitive: false
+        direction: directed
+        weight-strategy: null
+        max-depth: 1
+        description: "不可传递（非隐含关系），作为路径桥梁连接其他可传递关系"
+      - type: MAPPING_CORRESPONDENCE
+        transitive: false
+        direction: bidirectional
+        weight-strategy: null
+        max-depth: 1
+        description: "不传递，max策略合并双向查询的置信度"

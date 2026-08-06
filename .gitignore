@@ -1,0 +1,38 @@
+# --- Java / Maven build ---
+target/
+.flattened-pom.xml
+*.iml
+
+# --- IDE / Editor ---
+.idea/
+.vscode/
+*.suo
+*.njsproj
+*.sln
+*.sw?
+
+# --- OS ---
+.DS_Store
+Thumbs.db
+
+# --- Logs / Environment ---
+*.log
+.env*
+
+# --- docs-dev (not committed) ---
+docs-dev/
+
+# --- Export / archive artifacts ---
+specs.zip
+*.zip
+
+# --- opencode (ignore by default, except metaforge-cli/.opencode) ---
+.opencode/
+!metaforge-cli/.opencode/
+!metaforge-cli/.opencode/**
+
+# --- .specify (ignore by default, except memory/ and context.json) ---
+.specify/*
+!.specify/memory/
+!.specify/memory/**
+!.specify/context.json

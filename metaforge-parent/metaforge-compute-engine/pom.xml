@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.metaforge</groupId>
+        <artifactId>metaforge-parent</artifactId>
+        <version>${revision}</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>metaforge-compute-engine</artifactId>
+    <packaging>pom</packaging>
+
+    <name>BC: Semantic Query &amp; Reasoning Engine</name>
+    <description>语义查询与推理引擎 BC——多维图遍历检索、路径推理分析、影响溯源评估</description>
+
+    <modules>
+        <module>metaforge-compute-engine-api</module>
+        <module>metaforge-compute-engine-core</module>
+    </modules>
+</project>

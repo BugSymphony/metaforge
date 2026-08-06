@@ -1,0 +1,21 @@
+# ===== MetaForge Graph BC 专属配置 =====
+# 配置前缀: metaforge.graph
+
+metaforge:
+  graph:
+    schema-cache:
+      ttl-seconds: 1800
+      max-size: 200
+    validation:
+      max-content-size: 10485760
+    import:
+      batch-size: 100
+
+# Caffeine 缓存配置
+spring:
+  cache:
+    type: caffeine
+    caffeine:
+      spec: expireAfterWrite=30m,maximumSize=200,recordStats
+    cache-names:
+      - metaforge-graph:schema

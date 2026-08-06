@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.metaforge</groupId>
+        <artifactId>metaforge-agent-cognition</artifactId>
+        <version>${revision}</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>metaforge-agent-cognition-api</artifactId>
+    <packaging>jar</packaging>
+
+    <name>BC: Agent Cognition Guidance API</name>
+    <description>元认知指导层 BC 契约层——DTO、接口、枚举、常量及 PerspectiveExecutor SPI 定义，供下游 BC 编译依赖与第三方插件开发</description>
+
+    <dependencies>
+        <!-- API 模块保持契约层轻量纯粹，不依赖 metaforge-framework。
+             仅引入 jakarta.validation-api 用于请求参数校验注解（JSR-380 标准）。 -->
+        <dependency>
+            <groupId>jakarta.validation</groupId>
+            <artifactId>jakarta.validation-api</artifactId>
+        </dependency>
+    </dependencies>
+
+</project>

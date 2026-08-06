@@ -1,0 +1,174 @@
+---
+id: foundation-core-rest-api-schema
+protocol: REST
+version: 1.0.0
+owner: foundation-core
+description: OpenAPI 3.0 schema definition for foundation-core unified response format, DTOs, and error responses
+type: foundation
+---
+
+openapi: "3.0.3"
+info:
+  title: MetaForge Foundation Core API
+  description: foundation-core unified REST API response contract. All MetaForge platform REST interfaces follow this specification.
+  version: "1.0.0"
+  contact:
+    name: MetaForge Platform Team
+
+servers:
+  - url: http://localhost:8080
+    description: Local development environment
+
+paths: {}
+
+components:
+  schemas:
+    ApiResponse:
+      type: object
+      description: Unified response body wrapper returned by all API endpoints
+      required:
+        - code
+        - message
+        - traceId
+      properties:
+        code:
+          type: integer
+          description: Business status code, 200 for success
+          example: 200
+          minimum: 0
+        message:
+          type: string
+          description: Status message; "success" for successful requests
+          example: success
+          minLength: 1
+        data:
+          description: Response payload; contains business data on success, null on error
+          nullable: true
+        traceId:
+          type: string
+          description: Full-link trace identifier, 32-char hex UUID
+          example: a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6
+          pattern: '^[a-f0-9]{32}$'
+
+    PageRequest:
+      type: object
+      description: Pagination request parameters
+      properties:
+        page:
+          type: integer
+          description: Page number (1-based)
+          default: 1
+          minimum: 1
+          example: 1
+        size:
+          type: integer
+          description: Items per page
+          default: 20
+          minimum: 1
+          maximum: 100
+          example: 20
+        sort:
+          type: string
+          description: Sort field and direction (field:asc|desc)
+          pattern: '^[a-zA-Z][a-zA-Z0-9_]*(:(asc|desc))?$'
+          example: createdTime:desc
+
+    PageResult:
+      type: object
+      description: Paginated response result
+      required:
+        - content
+        - total
+        - page
+        - size
+        - totalPages
+      properties:
+        content:
+          type: array
+          description: Current page data list
+          items: {}
+        total:
+          type: integer
+          description: Total record count
+          format: int64
+          minimum: 0
+          example: 150
+        page:
+          type: integer
+          description: Current page number
+          minimum: 1
+          example: 1
+        size:
+          type: integer
+          description: Items per page
+          minimum: 1
+          example: 20
+        totalPages:
+          type: integer
+          description: Total number of pages
+          minimum: 0
+          example: 8
+
+    BaseEntity:
+      type: object
+      description: Base entity DTO with audit fields
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Primary key ID
+          example: 42
+        createdTime:
+          type: string
+          format: date-time
+          description: Creation time (yyyy-MM-dd HH:mm:ss)
+          example: "2026-08-01 14:30:00"
+        updatedTime:
+          type: string
+          format: date-time
+          description: Last update time (yyyy-MM-dd HH:mm:ss)
+          example: "2026-08-01 14:30:00"
+
+    ErrorDetail:
+      type: object
+      description: Error response (data=null)
+      required:
+        - code
+        - message
+        - data
+        - traceId
+      properties:
+        code:
+          type: integer
+          description: Error code (>= 10000)
+          minimum: 10000
+          example: 20001
+        message:
+          type: string
+          description: Error message (Chinese or i18n)
+          example: "参数校验失败: 字段 'email' 格式不正确"
+        data:
+          type: string
+          nullable: true
+          description: Always null on error
+          example: null
+          enum: [null]
+        traceId:
+          type: string
+          description: 32-char UUID for troubleshooting
+          example: a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6
+
+  headers:
+    X-Trace-Id:
+      description: Full-link trace ID, matches traceId field in response body
+      schema:
+        type: string
+        pattern: '^[a-f0-9]{32}$'
+    Accept-Language:
+      description: i18n language selection
+      schema:
+        type: string
+        enum:
+          - zh-CN
+          - en-US
+        default: zh-CN

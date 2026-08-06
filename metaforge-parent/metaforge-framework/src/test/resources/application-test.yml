@@ -1,0 +1,6 @@
+spring:
+  flyway:
+    enabled: false
+logging:
+  level:
+    com.metaforge: DEBUG

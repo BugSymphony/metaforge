@@ -1,0 +1,33 @@
+{
+  "currentBc": "agent-consumption",
+  "bcs": [
+    {
+      "name": "foundation-core",
+      "path": "metaforge-parent"
+    },
+    {
+      "name": "metamodel-governance",
+      "path": "metaforge-parent/metaforge-metamodel"
+    },
+    {
+      "name": "metadata-management",
+      "path": "metaforge-parent/metaforge-metadata"
+    },
+    {
+      "name": "semantic-relation-network",
+      "path": "metaforge-parent/metaforge-graph"
+    },
+    {
+      "name": "semantic-query-engine",
+      "path": "metaforge-parent/metaforge-compute-engine"
+    },
+    {
+      "name": "server-agent-cognition",
+      "path": "metaforge-parent/metaforge-agent-cognition"
+    },
+    {
+      "name": "agent-consumption",
+      "path": "metaforge-cli"
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.metaforge</groupId>
+        <artifactId>metaforge-parent</artifactId>
+        <version>${revision}</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>metaforge-agent-cognition</artifactId>
+    <packaging>pom</packaging>
+
+    <name>BC: Agent Cognition Guidance</name>
+    <description>元认知指导层 BC——基于模板驱动的多认知视角编排引擎，提供面向 Agent 的结构化认知交付物</description>
+
+    <modules>
+        <module>metaforge-agent-cognition-api</module>
+        <module>metaforge-agent-cognition-core</module>
+    </modules>
+
+</project>

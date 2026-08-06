@@ -1,0 +1,17 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: metaforge-postgres
+    environment:
+      POSTGRES_USER: metaforge
+      POSTGRES_PASSWORD: metaforge
+      POSTGRES_DB: metaforge
+    ports:
+      - "5432:5432"
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U metaforge -d metaforge"]
+      interval: 10s
+      timeout: 5s
+      retries: 5

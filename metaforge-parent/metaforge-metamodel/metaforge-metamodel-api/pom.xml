@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.metaforge</groupId>
+        <artifactId>metaforge-metamodel</artifactId>
+        <version>${revision}</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>metaforge-metamodel-api</artifactId>
+    <packaging>jar</packaging>
+
+    <name>BC: Metamodel Governance API</name>
+    <description>元模型治理 BC 契约层——DTO、接口、枚举、常量定义，供下游 BC 编译依赖</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.metaforge</groupId>
+            <artifactId>metaforge-framework</artifactId>
+        </dependency>
+    </dependencies>
+
+</project>

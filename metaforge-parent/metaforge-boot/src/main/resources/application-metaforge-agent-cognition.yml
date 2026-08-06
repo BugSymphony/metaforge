@@ -1,0 +1,11 @@
+# ===== MetaForge Agent Cognition BC 专属配置 =====
+metaforge:
+  agent-cognition:
+    template-path: classpath:cognition/cognition-templates.yml
+    perspectives-path: classpath:cognition/cognition-perspectives.yml
+    cache-enabled: true
+    cache-expire-minutes: 30
+    perspective-timeout-ms: 2000
+    default-max-tokens: 8000
+    default-depth: L2
+    default-archetype: execution

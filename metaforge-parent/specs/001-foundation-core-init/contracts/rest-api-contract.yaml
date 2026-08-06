@@ -1,0 +1,165 @@
+openapi: "3.0.3"
+info:
+  title: MetaForge Foundation Core API
+  description: foundation-core 统一 REST API 响应契约。所有 MetaForge 平台 REST 接口遵循此规范。
+  version: "1.0.0"
+  contact:
+    name: MetaForge Platform Team
+
+servers:
+  - url: http://localhost:8080
+    description: 本地开发环境
+
+paths: {}
+
+components:
+  schemas:
+    ApiResponse:
+      type: object
+      description: 统一响应体包装，所有 API 端点返回此结构
+      required:
+        - code
+        - message
+        - traceId
+      properties:
+        code:
+          type: integer
+          description: 业务状态码，200 表示成功
+          example: 200
+          minimum: 0
+        message:
+          type: string
+          description: 提示信息；成功时为 "success"
+          example: success
+          minLength: 1
+        data:
+          description: 响应数据体；成功时包含业务数据，失败时为 null
+          nullable: true
+        traceId:
+          type: string
+          description: 全链路追踪标识，32 位十六进制 UUID
+          example: a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6
+          pattern: '^[a-f0-9]{32}$'
+
+    PageRequest:
+      type: object
+      description: 分页请求参数
+      properties:
+        page:
+          type: integer
+          description: 页码（1-based）
+          default: 1
+          minimum: 1
+          example: 1
+        size:
+          type: integer
+          description: 每页条数
+          default: 20
+          minimum: 1
+          maximum: 100
+          example: 20
+        sort:
+          type: string
+          description: 排序字段与方向 (field:asc|desc)
+          pattern: '^[a-zA-Z][a-zA-Z0-9_]*(:(asc|desc))?$'
+          example: createdTime:desc
+
+    PageResult:
+      type: object
+      description: 分页响应结果
+      required:
+        - content
+        - total
+        - page
+        - size
+        - totalPages
+      properties:
+        content:
+          type: array
+          description: 当前页数据列表
+          items: {}
+        total:
+          type: integer
+          description: 总记录数
+          format: int64
+          minimum: 0
+          example: 150
+        page:
+          type: integer
+          description: 当前页码
+          minimum: 1
+          example: 1
+        size:
+          type: integer
+          description: 每页条数
+          minimum: 1
+          example: 20
+        totalPages:
+          type: integer
+          description: 总页数
+          minimum: 0
+          example: 8
+
+    BaseEntity:
+      type: object
+      description: 基础实体 DTO（含审计字段）
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: 主键 ID
+          example: 42
+        createdTime:
+          type: string
+          format: date-time
+          description: 创建时间 (yyyy-MM-dd HH:mm:ss)
+          example: "2026-08-01 14:30:00"
+        updatedTime:
+          type: string
+          format: date-time
+          description: 更新时间 (yyyy-MM-dd HH:mm:ss)
+          example: "2026-08-01 14:30:00"
+
+    ErrorDetail:
+      type: object
+      description: 错误响应（data=null）
+      required:
+        - code
+        - message
+        - data
+        - traceId
+      properties:
+        code:
+          type: integer
+          description: 错误码（≥ 10000）
+          minimum: 10000
+          example: 20001
+        message:
+          type: string
+          description: 错误描述（中文或 i18n）
+          example: "参数校验失败: 字段 'email' 格式不正确"
+        data:
+          type: string
+          nullable: true
+          description: 错误时始终为 null
+          example: null
+          enum: [null]
+        traceId:
+          type: string
+          description: 32 位 UUID，用于问题排查
+          example: a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6
+
+  headers:
+    X-Trace-Id:
+      description: 全链路追踪 ID，与响应体 traceId 字段一致
+      schema:
+        type: string
+        pattern: '^[a-f0-9]{32}$'
+    Accept-Language:
+      description: 国际化语言选择
+      schema:
+        type: string
+        enum:
+          - zh-CN
+          - en-US
+        default: zh-CN

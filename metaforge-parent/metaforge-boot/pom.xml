@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.metaforge</groupId>
+        <artifactId>metaforge-parent</artifactId>
+        <version>${revision}</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>metaforge-boot</artifactId>
+    <packaging>jar</packaging>
+
+    <name>MetaForge Boot</name>
+    <description>应用启动模块（唯一运行入口），聚合所有平台模块与业务 BC</description>
+
+    <dependencies>
+        <!-- 平台级能力：server 传递提供 common + framework -->
+        <dependency>
+            <groupId>com.metaforge</groupId>
+            <artifactId>metaforge-server</artifactId>
+        </dependency>
+
+        <!-- 业务 BC 注册：在此声明为依赖即完成接入 -->
+        <dependency>
+            <groupId>com.metaforge</groupId>
+            <artifactId>metaforge-metamodel-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.metaforge</groupId>
+            <artifactId>bc-sample</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.metaforge</groupId>
+            <artifactId>metaforge-graph-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.metaforge</groupId>
+            <artifactId>metaforge-metadata-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.metaforge</groupId>
+            <artifactId>metaforge-compute-engine-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.metaforge</groupId>
+            <artifactId>metaforge-agent-cognition-core</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <mainClass>com.metaforge.MetaforgeApplication</mainClass>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

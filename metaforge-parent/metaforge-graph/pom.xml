@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.metaforge</groupId>
+        <artifactId>metaforge-parent</artifactId>
+        <version>${revision}</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>metaforge-graph</artifactId>
+    <packaging>pom</packaging>
+
+    <name>BC: Semantic Relation Network</name>
+    <description>语义关系网络 BC——关系实例全生命周期管理、拓扑维护、多维查询</description>
+
+    <modules>
+        <module>metaforge-graph-api</module>
+        <module>metaforge-graph-core</module>
+    </modules>
+</project>

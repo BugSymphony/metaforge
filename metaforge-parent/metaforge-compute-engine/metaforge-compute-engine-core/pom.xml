@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.metaforge</groupId>
+        <artifactId>metaforge-compute-engine</artifactId>
+        <version>${revision}</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>metaforge-compute-engine-core</artifactId>
+    <packaging>jar</packaging>
+
+    <name>MetaForge Compute Engine Core</name>
+    <description>语义查询与推理引擎 BC 实现层——领域模型、应用服务、基础设施适配、接口适配</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.metaforge</groupId>
+            <artifactId>metaforge-compute-engine-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.metaforge</groupId>
+            <artifactId>metaforge-framework</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.metaforge</groupId>
+            <artifactId>metaforge-metamodel-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.metaforge</groupId>
+            <artifactId>metaforge-metadata-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.metaforge</groupId>
+            <artifactId>metaforge-graph-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.ai</groupId>
+            <artifactId>spring-ai-starter-mcp-server-webmvc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jooq</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.mapstruct</groupId>
+                            <artifactId>mapstruct-processor</artifactId>
+                            <version>${mapstruct.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
