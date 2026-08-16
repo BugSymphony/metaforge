@@ -1,7 +1,12 @@
-<p align="center">
-  <strong>MetaForge</strong><br/>
-  AI Agent 的元数据中间件 · 业务语义底座
-</p>
+# MetaForge (元数据中间件 · AI Agent 业务语义底座)
+
+[![许可证](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![文档](https://img.shields.io/badge/docs-概念-blue)](./docs/concepts/semantic-blueprint.md)
+[![模板](https://img.shields.io/badge/docs-认知模板-blue)](./docs/concepts/cognition-templates.md)
+[![案例](https://img.shields.io/badge/examples-示例-blue)](./docs/examples)
+[![架构](https://img.shields.io/badge/docs-架构-blue)](./docs/architecture.md)
+[![契约](https://img.shields.io/badge/docs-接口契约-blue)](./docs/contracts/INDEX.md)
+[![快速入门](https://img.shields.io/badge/getting-started-blue)](./README.md#快速开始)
 
 > MetaForge 是**元数据驱动的 AI 中间件**——正如关系型数据库是 Web 应用的数据底座，MetaForge 是 AI Agent 的语义底座。它不存业务数据，只存"数据的说明书"（结构化元数据）：统一描述业务领域内的概念定义、语义关系、规则约束与能力边界，让 AI Agent 从"凭训练先验想象业务"变为"查询语义说明书执行业务"。
 
@@ -98,6 +103,7 @@ opencode run "你是药剂审核 Agent，执行处方审核任务：查处方审
 - [价值：如何改变 AI Agent](./docs/ai-agent-value.md)
 - [架构](./docs/architecture.md)
 - [示例](./docs/examples/)
+- [接口契约](./docs/contracts/INDEX.md)（6 场景模板 + 公共约定的详细契约）
 
 ## 开源协议
 
