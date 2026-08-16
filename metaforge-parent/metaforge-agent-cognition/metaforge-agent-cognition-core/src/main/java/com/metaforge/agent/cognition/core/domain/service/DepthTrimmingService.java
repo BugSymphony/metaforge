@@ -1,48 +1,71 @@
 package com.metaforge.agent.cognition.core.domain.service;
 
 import com.metaforge.agent.cognition.api.enums.CognitionDepth;
+import com.metaforge.agent.cognition.core.domain.model.entity.OperatorDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.*;
 
 @Service
 public class DepthTrimmingService {
 
     private static final Logger log = LoggerFactory.getLogger(DepthTrimmingService.class);
 
-    public int getMaxPerspectives(CognitionDepth depth) {
-        if (depth == null) {
-            log.warn("认知深度为空，回退默认 L2");
-            return CognitionDepth.L2.maxPerspectives();
+    private static final int MIN_KEEP = 3;
+
+    public TrimResult trim(List<OperatorDefinition> operators, CognitionDepth depth) {
+        if (operators == null || operators.isEmpty()) {
+            return new TrimResult(List.of(), List.of());
         }
-        return depth.maxPerspectives();
+
+        if (depth == CognitionDepth.L3) {
+            return new TrimResult(new ArrayList<>(operators), List.of());
+        }
+
+        List<OperatorDefinition> requiredOps = operators.stream()
+                .filter(OperatorDefinition::isRequired)
+                .toList();
+
+        List<OperatorDefinition> optionalOps = operators.stream()
+                .filter(op -> !op.isRequired())
+                .sorted(Comparator.comparingInt(OperatorDefinition::getPriority).reversed())
+                .toList();
+
+        int optionalCount = optionalOps.size();
+        double ratio = depth.getTrimRatio();
+        int keepCount = Math.max(MIN_KEEP, (int) Math.ceil(optionalCount * ratio));
+        keepCount = Math.min(keepCount, optionalCount);
+
+        List<OperatorDefinition> trimmed = new ArrayList<>(requiredOps);
+        List<String> truncated = new ArrayList<>();
+
+        if (keepCount < optionalCount) {
+            for (int i = keepCount; i < optionalCount; i++) {
+                String opId = optionalOps.get(i).getOperatorId();
+                String prefix = opId.contains(".") ? opId.substring(0, opId.indexOf('.')) : opId;
+                truncated.add(prefix);
+            }
+        }
+
+        if (keepCount > 0) {
+            trimmed.addAll(optionalOps.subList(0, keepCount));
+        }
+
+        log.debug("深度裁剪: depth={}, total={}, required={}, optional={}/{}, truncated={}",
+                depth, operators.size(), requiredOps.size(), keepCount, optionalCount, truncated.size());
+
+        return new TrimResult(trimmed, truncated);
     }
 
-    public List<String> trimPerspectives(List<String> perspectiveIds, CognitionDepth depth) {
-        if (perspectiveIds == null || perspectiveIds.isEmpty()) {
-            return perspectiveIds;
-        }
+    public static class TrimResult {
+        public final List<OperatorDefinition> trimmedOperators;
+        public final List<String> truncatedPerspectives;
 
-        int maxCount = getMaxPerspectives(depth);
-        if (perspectiveIds.size() <= maxCount) {
-            return perspectiveIds;
-        }
-
-        log.debug("深度裁剪: 从 {} 个视角裁剪至 {} (depth={})", perspectiveIds.size(), maxCount, depth);
-        return perspectiveIds.subList(0, maxCount);
-    }
-
-    public CognitionDepth resolveDepth(String depthValue) {
-        if (depthValue == null) {
-            return CognitionDepth.L2;
-        }
-        try {
-            return CognitionDepth.valueOf(depthValue.toUpperCase());
-        } catch (IllegalArgumentException e) {
-            log.warn("未知认知深度值 '{}'，回退默认 L2", depthValue);
-            return CognitionDepth.L2;
+        public TrimResult(List<OperatorDefinition> trimmedOperators, List<String> truncatedPerspectives) {
+            this.trimmedOperators = trimmedOperators;
+            this.truncatedPerspectives = truncatedPerspectives;
         }
     }
 }

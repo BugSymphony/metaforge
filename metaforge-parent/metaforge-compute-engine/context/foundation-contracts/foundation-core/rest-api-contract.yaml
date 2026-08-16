@@ -122,12 +122,12 @@ components:
           type: string
           format: date-time
           description: Creation time (yyyy-MM-dd HH:mm:ss)
-          example: "2026-08-01 14:30:00"
+          example: "2026-07-23 14:30:00"
         updatedTime:
           type: string
           format: date-time
           description: Last update time (yyyy-MM-dd HH:mm:ss)
-          example: "2026-08-01 14:30:00"
+          example: "2026-07-23 14:30:00"
 
     ErrorDetail:
       type: object

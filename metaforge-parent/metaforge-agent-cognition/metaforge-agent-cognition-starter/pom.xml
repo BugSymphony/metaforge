@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.metaforge</groupId>
+        <artifactId>metaforge-agent-cognition</artifactId>
+        <version>${revision}</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>metaforge-agent-cognition-starter</artifactId>
+    <packaging>jar</packaging>
+
+    <name>BC: Agent Cognition Starter</name>
+    <description>认知基础架构层 BC 聚合装配层——聚合 api 与 core 模块依赖，为 boot 模块提供单一依赖入口</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.metaforge</groupId>
+            <artifactId>metaforge-agent-cognition-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.metaforge</groupId>
+            <artifactId>metaforge-agent-cognition-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.metaforge</groupId>
+            <artifactId>metaforge-agent-cognition-dimensions</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.metaforge</groupId>
+            <artifactId>metaforge-agent-cognition-templates</artifactId>
+        </dependency>
+    </dependencies>
+
+</project>

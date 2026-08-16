@@ -1,6 +1,6 @@
 # 技术调研: 元模型治理核心能力 MVP
 
-**Feature**: [spec.md](./spec.md) | **Plan**: [plan.md](./plan.md) | **Date**: 2026-08-01
+**Feature**: [spec.md](./spec.md) | **Plan**: [plan.md](./plan.md) | **Date**: 2026-07-31
 
 ## 1. FQN 统一生成器设计
 

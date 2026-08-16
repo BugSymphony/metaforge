@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.metaforge</groupId>
+        <artifactId>metaforge-agent-cognition</artifactId>
+        <version>${revision}</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>metaforge-agent-cognition-templates</artifactId>
+    <packaging>jar</packaging>
+
+    <name>BC: Agent Cognition Templates</name>
+    <description>认知模板配置层——6 个内置认知模板 YAML 文件的 classpath 资源模块，供引擎核心 TemplateScanner 运行时发现注册</description>
+
+</project>

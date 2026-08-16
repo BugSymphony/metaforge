@@ -1,252 +1,122 @@
 package com.metaforge.agent.cognition.core.application.service;
 
 import com.metaforge.agent.cognition.api.dto.request.CognitionRequest;
-import com.metaforge.agent.cognition.api.dto.response.GuidanceResult;
-import com.metaforge.agent.cognition.api.enums.AgentArchetype;
-import com.metaforge.agent.cognition.api.enums.CognitionDepth;
-import com.metaforge.agent.cognition.api.enums.ContextMode;
-import com.metaforge.agent.cognition.api.enums.OutputFormat;
-import com.metaforge.agent.cognition.api.enums.PerspectiveCode;
-import com.metaforge.agent.cognition.api.enums.ScopeMode;
+import com.metaforge.agent.cognition.api.dto.response.CognitionResponse;
+import com.metaforge.agent.cognition.api.dto.response.ContextMeta;
 import com.metaforge.agent.cognition.api.service.CognitionQueryService;
-import com.metaforge.agent.cognition.core.domain.exception.EmptyBundleFqnsException;
-import com.metaforge.agent.cognition.core.domain.exception.InvalidEntityFqnException;
+import com.metaforge.agent.cognition.core.domain.model.aggregate.CognitionQuery;
+import com.metaforge.agent.cognition.core.domain.model.entity.TemplateDefinition;
+import com.metaforge.agent.cognition.core.domain.model.valueobject.TemplateId;
 import com.metaforge.agent.cognition.core.domain.exception.TemplateNotFoundException;
-import com.metaforge.agent.cognition.core.domain.service.FqnValidationService;
-import com.metaforge.agent.cognition.core.domain.service.PerspectiveOrchestrationService;
-import com.metaforge.agent.cognition.core.domain.service.ScopeNarrowingService;
-import com.metaforge.agent.cognition.core.domain.service.ScopeResolutionServiceImpl;
+import com.metaforge.agent.cognition.core.domain.service.DepthTrimmingService;
+import com.metaforge.agent.cognition.core.domain.service.OperatorOrchestrationService;
+import com.metaforge.agent.cognition.core.domain.service.OutputAssemblyService;
+import com.metaforge.agent.cognition.core.domain.service.ScopeResolutionService;
+import com.metaforge.agent.cognition.core.domain.service.ScopeResolutionService.ScopeValidationResult;
 import com.metaforge.agent.cognition.core.domain.service.TemplateResolutionService;
-import com.metaforge.agent.cognition.core.domain.service.VersionAnchorService;
-import com.metaforge.agent.cognition.core.domain.model.valueobject.DataVersionAnchor;
-import com.metaforge.agent.cognition.core.infrastructure.config.TemplateConfig;
-import com.metaforge.agent.cognition.core.infrastructure.config.AgentCognitionProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import java.time.Instant;
+import java.util.Collections;
 
 @Service
 public class CognitionQueryServiceImpl implements CognitionQueryService {
 
     private static final Logger log = LoggerFactory.getLogger(CognitionQueryServiceImpl.class);
 
-    private final TemplateConfig templateConfig;
-    private final PerspectiveOrchestrationService orchestrationService;
-    private final AgentCognitionProperties properties;
-    private final FqnValidationService fqnValidationService;
-    private final ScopeResolutionServiceImpl scopeResolutionService;
-    private final VersionAnchorService versionAnchorService;
-    private final ScopeNarrowingService scopeNarrowingService;
+    private final TemplateResolutionService templateResolutionService;
+    private final ScopeResolutionService scopeResolutionService;
+    private final DepthTrimmingService depthTrimmingService;
+    private final OperatorOrchestrationService operatorOrchestrationService;
+    private final OutputAssemblyService outputAssemblyService;
 
-    public CognitionQueryServiceImpl(TemplateConfig templateConfig,
-                                      PerspectiveOrchestrationService orchestrationService,
-                                      AgentCognitionProperties properties,
-                                      FqnValidationService fqnValidationService,
-                                      ScopeResolutionServiceImpl scopeResolutionService,
-                                      VersionAnchorService versionAnchorService,
-                                      ScopeNarrowingService scopeNarrowingService) {
-        this.templateConfig = templateConfig;
-        this.orchestrationService = orchestrationService;
-        this.properties = properties;
-        this.fqnValidationService = fqnValidationService;
+    @Autowired
+    public CognitionQueryServiceImpl(TemplateResolutionService templateResolutionService,
+                                      ScopeResolutionService scopeResolutionService,
+                                      @Autowired(required = false) DepthTrimmingService depthTrimmingService,
+                                      @Autowired(required = false) OperatorOrchestrationService operatorOrchestrationService,
+                                      @Autowired(required = false) OutputAssemblyService outputAssemblyService) {
+        this.templateResolutionService = templateResolutionService;
         this.scopeResolutionService = scopeResolutionService;
-        this.versionAnchorService = versionAnchorService;
-        this.scopeNarrowingService = scopeNarrowingService;
+        this.depthTrimmingService = depthTrimmingService;
+        this.operatorOrchestrationService = operatorOrchestrationService;
+        this.outputAssemblyService = outputAssemblyService;
     }
 
     @Override
-    public GuidanceResult execute(String templateId, CognitionRequest request) {
-        log.info("执行认知查询: templateId={}, bundleFqns={}, entityFqn={}",
-                templateId, request.bundleFqns(), request.entityFqn());
+    public CognitionResponse execute(String templateIdStr, CognitionRequest request) {
+        log.info("认知查询执行: templateId={}, format={}, depth={}, archetype={}",
+                templateIdStr, request.format(), request.cognitionDepth(), request.agentArchetype());
 
-        List<String> bundleFqns = resolveBundleFqns(request);
-
-        List<DataVersionAnchor> versionAnchors = versionAnchorService.resolveAnchors(bundleFqns);
-
-        ContextMode contextMode = deriveContextMode(request);
-        String depthStr = request.cognitionDepth() != null ? request.cognitionDepth() : properties.getDefaultDepth();
-        CognitionDepth depth = CognitionDepth.fromString(depthStr);
-
-        String archetypeStr = request.agentArchetype() != null ? request.agentArchetype() : properties.getDefaultArchetype();
-        AgentArchetype archetype = AgentArchetype.fromString(archetypeStr);
-
-        int maxTokens = request.maxTokens() != null ? request.maxTokens() : properties.getDefaultMaxTokens();
-
-        List<PerspectiveCode> perspectiveCodes =
-                buildPerspectiveList(templateId, request, depth);
-
-        ScopeMode scopeMode = request.scopeMode() != null ? ScopeMode.fromString(request.scopeMode()) : ScopeMode.INHERITED;
-        List<String> narrowedEntityFqns = null;
-        List<String> narrowedSchemaFqns = null;
-
-        if (scopeMode == ScopeMode.PURE) {
-            perspectiveCodes = List.of(PerspectiveCode.ENTITY_PROFILE);
-            log.debug("PURE 模式: 仅使用 entity_profile 视角");
-        } else if (scopeMode == ScopeMode.INHERITED && request.entityFqn() != null) {
-            var narrowedScope = scopeNarrowingService.narrow(request.entityFqn());
-            narrowedEntityFqns = narrowedScope.relatedEntityFqns();
-            narrowedSchemaFqns = narrowedScope.relatedSchemaFqns();
-            log.info("INHERITED 模式: 三层收窄完成 - blueprintSteps={}, relatedEntities={}, relatedSchemas={}",
-                    narrowedScope.blueprintStepFqns().size(),
-                    narrowedScope.relatedEntityFqns().size(),
-                    narrowedScope.relatedSchemaFqns().size());
+        TemplateId templateId;
+        try {
+            templateId = new TemplateId(templateIdStr);
+        } catch (IllegalArgumentException e) {
+            log.warn("模板 ID 格式无效: {}", templateIdStr);
+            throw new TemplateNotFoundException(templateIdStr);
         }
 
-        TemplateResolutionService.ExecutionPlan executionPlan = new TemplateResolutionService.ExecutionPlan(
-                perspectiveCodes, depth, archetype, maxTokens,
-                OutputFormat.JSON, contextMode, scopeMode);
-
-        PerspectiveOrchestrationService.OrchestrationContext orchestrationContext =
-                new PerspectiveOrchestrationService.OrchestrationContext(
-                        bundleFqns, request.entityFqn(), request.entityTypes(),
-                        request.subjectDomainFqn(), request.contextParameters(),
-                        request.cursor(), request.pageSize(), request.expand(),
-                        narrowedEntityFqns, narrowedSchemaFqns);
-
-        com.metaforge.agent.cognition.core.domain.model.aggregate.GuidanceResult domainResult =
-                orchestrationService.orchestrate(executionPlan, orchestrationContext);
-
-        domainResult.getContextMeta().setDataVersionAnchors(versionAnchors);
-        domainResult.getContextMeta().setScopeMode(scopeMode);
-        domainResult.getContextMeta().setCognitionDepth(depth);
-        domainResult.getContextMeta().setAgentArchetype(archetype);
-
-        if (contextMode == ContextMode.ENTITY_LEVEL && request.entityFqn() != null) {
-            var adjacentContext = scopeResolutionService.buildAdjacentContext(request.entityFqn());
-            domainResult.getContextMeta().setAdjacentContext(adjacentContext);
+        TemplateDefinition definition = templateResolutionService.resolve(templateIdStr);
+        if (definition == null) {
+            log.warn("模板未注册: {}", templateIdStr);
+            throw new TemplateNotFoundException(templateIdStr);
         }
 
-        log.info("认知查询执行完成: templateId={}, appliedPerspectives={}, contextMode={}",
-                templateId,
-                domainResult.getContextMeta().getAppliedPerspectives() != null
-                        ? domainResult.getContextMeta().getAppliedPerspectives().size() : 0,
-                contextMode);
+        CognitionQuery query = new CognitionQuery(templateId, request);
+        query.loadTemplate(definition);
 
-        return mapToApiResult(templateId, domainResult);
-    }
-
-    private ContextMode deriveContextMode(CognitionRequest request) {
-        return request.entityFqn() != null && !request.entityFqn().isBlank()
-                ? ContextMode.ENTITY_LEVEL : ContextMode.BUNDLE_LEVEL;
-    }
-
-    private List<String> resolveBundleFqns(CognitionRequest request) {
-        List<String> bundleFqns = request.bundleFqns();
-        String entityFqn = request.entityFqn();
-
-        if ((bundleFqns == null || bundleFqns.isEmpty()) && entityFqn != null && !entityFqn.isBlank()) {
-            String resolvedBundle = fqnValidationService.resolveBundleFromEntityFqn(entityFqn);
-            bundleFqns = List.of(resolvedBundle);
-            log.info("从 entity_fqn 自动推导 bundle_fqns: entityFqn={}, bundleFqns={}", entityFqn, bundleFqns);
+        try {
+            ScopeValidationResult validationResult = scopeResolutionService.validateScope(
+                    request.scope(),
+                    definition.getScopeBehavior() != null && definition.getScopeBehavior().isScopeRequired(),
+                    (String) request.params().get("entity_fqn"));
+            for (String skipped : validationResult.skippedEntities) {
+                query.addSkippedEntity(skipped);
+            }
+        } catch (Exception e) {
+            log.warn("Scope 校验失败: {}", e.getMessage());
+            throw e;
         }
 
-        if (bundleFqns == null || bundleFqns.isEmpty()) {
-            throw new EmptyBundleFqnsException(
-                    "bundle_fqns 不能为空，且未提供 entity_fqn 用于自动推导 Bundle 范围");
+        query.filterByOperators();
+
+        query.filterByArchetype();
+
+        if (depthTrimmingService != null) {
+            DepthTrimmingService.TrimResult trimResult =
+                    depthTrimmingService.trim(query.getOperators(), query.getCognitionDepth());
+            query.setOperators(trimResult.trimmedOperators);
+            for (String truncated : trimResult.truncatedPerspectives) {
+                query.addTruncatedPerspective(truncated);
+            }
         }
 
-        fqnValidationService.validateBundleFqns(bundleFqns);
-
-        List<String> normalized = bundleFqns.stream()
-                .map(fqn -> {
-                    int colon = fqn.indexOf(':');
-                    return colon > 0 ? fqn.substring(0, colon) : fqn;
-                })
-                .distinct()
-                .toList();
-        log.debug("归一化 Bundle FQN: {} -> {}", bundleFqns, normalized);
-        return normalized;
-    }
-
-    private List<PerspectiveCode> buildPerspectiveList(
-            String templateId, CognitionRequest request, CognitionDepth depth) {
-
-        List<String> perspectiveIds;
-        List<String> requested = request.perspectives();
-        if (requested != null && !requested.isEmpty()) {
-            perspectiveIds = requested;
+        if (operatorOrchestrationService != null) {
+            operatorOrchestrationService.orchestrate(query);
         } else {
-            TemplateConfig.TemplateDefinition templateDef = templateConfig.getTemplate(templateId);
-            if (templateDef == null) {
-                throw new TemplateNotFoundException("模板未注册: " + templateId);
-            }
-            perspectiveIds = templateDef.getPerspectives();
-            if (perspectiveIds == null || perspectiveIds.isEmpty()) {
-                throw new TemplateNotFoundException("模板未配置任何视角: " + templateId);
-            }
+            log.info("P1 MVP 空算子编排: OperatorOrchestrationService Bean 未注册");
         }
 
-        return perspectiveIds.stream()
-                .map(id -> {
-                    try {
-                        return PerspectiveCode.fromString(id);
-                    } catch (IllegalArgumentException e) {
-                        log.warn("忽略未知视角标识: {}", id);
-                        return null;
-                    }
-                })
-                .filter(java.util.Objects::nonNull)
-                .collect(Collectors.toList());
+        if (outputAssemblyService != null) {
+            return outputAssemblyService.assemble(query);
+        }
+
+        return buildFallbackResponse(templateIdStr, request);
     }
 
-    private GuidanceResult mapToApiResult(String templateId,
-                                           com.metaforge.agent.cognition.core.domain.model.aggregate.GuidanceResult domainResult) {
-        GuidanceResult apiResult = new GuidanceResult();
-        apiResult.setTemplateId(templateId);
-
-        com.metaforge.agent.cognition.api.dto.response.ContextMeta apiContextMeta =
-                new com.metaforge.agent.cognition.api.dto.response.ContextMeta();
-        var domainMeta = domainResult.getContextMeta();
-
-        if (domainMeta != null) {
-            apiContextMeta.setBundleFqns(domainMeta.getBundleFqns());
-            apiContextMeta.setEntityFqn(domainMeta.getEntityFqn());
-            apiContextMeta.setContextMode(domainMeta.getContextMode());
-            apiContextMeta.setScopeMode(domainMeta.getScopeMode());
-            apiContextMeta.setCognitionDepth(domainMeta.getCognitionDepth());
-            apiContextMeta.setAgentArchetype(domainMeta.getAgentArchetype());
-            apiContextMeta.setAppliedPerspectives(domainMeta.getAppliedPerspectives());
-            apiContextMeta.setSkippedPerspectives(domainMeta.getSkippedPerspectives());
-            apiContextMeta.setSkipReasons(domainMeta.getSkipReasons());
-            apiContextMeta.setTotalTokenCount(domainMeta.getTotalTokenCount());
-            apiContextMeta.setTokenTrimmed(domainMeta.isTokenTrimmed());
-            apiContextMeta.setTruncated(domainMeta.isTruncated());
-            apiContextMeta.setQueriedAt(domainMeta.getQueriedAt());
-
-            if (domainMeta.getTruncations() != null) {
-                apiContextMeta.setTruncations(
-                        domainMeta.getTruncations().stream()
-                                .map(t -> new com.metaforge.agent.cognition.api.dto.response.ContextMeta.TruncationNote(
-                                        PerspectiveCode.fromString(t.perspective().value()),
-                                        t.reason()))
-                                .toList());
-            }
-
-            if (domainMeta.getDataVersionAnchors() != null) {
-                apiContextMeta.setDataVersionAnchors(
-                        domainMeta.getDataVersionAnchors().stream()
-                                .map(a -> new com.metaforge.agent.cognition.api.dto.DataVersionAnchor(
-                                        a.bundleFqn(), a.publishedVersionFqn(),
-                                        a.latestVersionNumber(), a.queriedAt()))
-                                .toList());
-            }
-
-            if (domainMeta.getAdjacentContext() != null) {
-                apiContextMeta.setAdjacentContext(
-                        new com.metaforge.agent.cognition.api.dto.response.AdjacentContext(
-                                domainMeta.getAdjacentContext().previousSteps(),
-                                domainMeta.getAdjacentContext().nextSteps(),
-                                domainMeta.getAdjacentContext().upstreamEntities(),
-                                domainMeta.getAdjacentContext().downstreamEntities()));
-            }
-        }
-
-        apiResult.setContextMeta(apiContextMeta);
-        apiResult.setPerspectives(domainResult.getPerspectiveChapters());
-
-        return apiResult;
+    private CognitionResponse buildFallbackResponse(String templateId, CognitionRequest request) {
+        ContextMeta contextMeta = new ContextMeta(
+                templateId,
+                Collections.emptyList(),
+                request.scope() != null ? request.scope() : com.metaforge.agent.cognition.api.dto.request.Scope.EMPTY,
+                0,
+                Instant.now(),
+                Collections.emptyList(),
+                Collections.emptyList()
+        );
+        return CognitionResponse.json(templateId, contextMeta, Collections.emptyList(), Collections.emptyMap());
     }
 }

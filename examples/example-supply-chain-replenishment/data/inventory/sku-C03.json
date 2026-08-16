@@ -1,0 +1,8 @@
+{
+  "sku_id": "SKU-C03",
+  "stock_qty": 20,
+  "reorder_level": 20,
+  "daily_demand": 8,
+  "max_stock": 80,
+  "sampled_at": "2026-08-15T10:10:00Z"
+}

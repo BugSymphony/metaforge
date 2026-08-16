@@ -1,0 +1,7 @@
+{
+  "supplier_id": "SUP-01",
+  "supplier_name": "优选供应链",
+  "reliability_score": 95,
+  "lead_time_days": 3,
+  "unit_price": 12
+}

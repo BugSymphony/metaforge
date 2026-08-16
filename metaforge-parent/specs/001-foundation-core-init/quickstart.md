@@ -62,7 +62,7 @@ mvn spring-boot:run -pl metaforge-boot
 
 查看启动日志中线程名包含 `virtual`：
 ```
-[2026-08-01 14:30:00.123] [virtual-1] [INFO] [a1b2c3d4...] [...]
+[2026-07-23 14:30:00.123] [virtual-1] [INFO] [a1b2c3d4...] [...]
 ```
 
 ### 3.2 验证 TraceId 自动生成

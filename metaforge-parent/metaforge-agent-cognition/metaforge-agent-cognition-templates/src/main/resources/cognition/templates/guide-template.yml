@@ -1,0 +1,107 @@
+templateId: GUIDE
+templateName: "单步执行指南"
+description: "为单步操作提供精细执行指导——包含实体画像、约束规则、条件动作、能力工具、协议细节、导航与分支决策的完整上下文"
+version: "1.0.0"
+stage: P0
+enabled: true
+
+config:
+  global:
+    bundleVersionFqn: metaforge:1.0.0
+  operators:
+    ontological.entity-profile: {}
+    deontic.rule-listing:
+      relationSchemaFqn: metaforge:1.0.0.agent.RuleAppliesTo
+      entitySchemaFqn: metaforge:1.0.0.agent.ExecutionRule
+    capability.tool-discovery:
+      relationSchemaFqns:
+        - metaforge:1.0.0.agent.AgentHasCapability
+        - metaforge:1.0.0.agent.TaskRequiresCapability
+        - metaforge:1.0.0.agent.StepUsesCapability
+      entitySchemaFqn: metaforge:1.0.0.agent.Capability
+    capability.protocol-detail:
+      relationSchemaFqnPrefix: metaforge:1.0.0.protocol.
+      entitySchemaFqn: metaforge:1.0.0.agent.Capability
+    procedural.adjacent-step: {}
+    procedural.decision-branch: {}
+    relational.direct-link: {}
+
+operators:
+  - operatorId: ontological.entity-profile
+    name: "实体画像"
+    priority: 100
+    required: true
+    archetypes: [execution]
+    description: "返回实体完整画像——全属性字段、类型结构说明、领域定位路径"
+  - operatorId: deontic.rule-listing
+    name: "规则清单"
+    priority: 90
+    required: true
+    archetypes: [execution, audit]
+    description: "适用于该实体的约束规则清单（含约束级别、条件与执行动作）"
+  - operatorId: capability.tool-discovery
+    name: "工具发现"
+    priority: 60
+    required: false
+    archetypes: [execution]
+    description: "实体关联的能力/工具清单"
+  - operatorId: capability.protocol-detail
+    name: "协议细节"
+    priority: 40
+    required: false
+    archetypes: [execution]
+    description: "接口协议细节展开——HTTP endpoint、MCP 工具参数等（默认不执行，按需以 entity_fqn=Capability 选择）"
+  - operatorId: procedural.adjacent-step
+    name: "前后步导航"
+    priority: 30
+    required: false
+    archetypes: [execution]
+    description: "当前执行单元（执行步骤/决策步骤/子任务）的前一步与后一步局部导航"
+  - operatorId: procedural.decision-branch
+    name: "决策分支"
+    priority: 20
+    required: false
+    archetypes: [execution]
+    description: "决策分支——决策步骤内容（条件/推荐/依据）与分支走向；执行步骤识别下游决策与简单分支；任务解析起点决策步骤"
+  - operatorId: relational.direct-link
+    name: "直连关系"
+    priority: 10
+    required: false
+    archetypes: [execution, audit]
+    description: "实体 1 度出边与入边，按关系类型分组"
+
+inputSchema:
+  type: object
+  properties:
+    selectOperators:
+      type: array
+      default:
+        - ontological.entity-profile
+        - deontic.rule-listing
+        - capability.tool-discovery
+        - procedural.adjacent-step
+        - procedural.decision-branch
+        - relational.direct-link
+      items:
+        type: string
+        description: "算子 ID（必须为模板已声明的 operatorId）"
+      description: "运行时选择要执行的算子子集。默认不含 capability.protocol-detail（协议详情按需加载）"
+    entity_fqn:
+      type: string
+      description: "目标实体全限定名"
+
+scopeBehavior:
+  acceptsScope: true
+  scopeRequired: false
+  producesUpdatedScope: false
+  scopeFields: [entity_schemas]
+  description: "接受可选 scope 限定查询范围；不产出更新的 scope"
+
+outputSchema:
+  type: GUIDE_RESULT
+  formats: [json, prompt]
+
+contextMeta:
+  includeVersionAnchors: true
+  includeScopeApplied: true
+  includeTokenEstimate: true

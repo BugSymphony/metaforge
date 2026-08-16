@@ -2,7 +2,7 @@
 
 **Feature Branch**: (none — 由 before_specify hook 创建)
 
-**Created**: 2026-08-01
+**Created**: 2026-07-25
 
 **Status**: Draft
 
@@ -273,7 +273,7 @@
 
 ## Clarifications
 
-### Session 2026-08-01
+### Session 2026-07-31
 
 - Q: name 字段的语义？ → A: 独立的人类可读显示名字段，与 FQN 推导的短名无关。
 - Q: 向量字段的名称和类型？ → A: 字段名 `embedding`，类型 JSONB（存储浮点数组）。

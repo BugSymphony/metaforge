@@ -1,0 +1,54 @@
+templateId: DELEGATE
+templateName: "子任务上下文委派"
+description: "为子 Agent 收窄认知 scope——以任务入口实体为锚点，产出收窄后的认知边界（entityFqns/schemas/updated_scope），上下文详情由 BRIEF 模板承接"
+version: "1.0.0"
+stage: P0
+enabled: true
+
+config:
+  global:
+    bundleVersionFqn: metaforge:1.0.0
+  operators:
+    governance.scope-narrowing: {}
+
+operators:
+  - operatorId: governance.scope-narrowing
+    name: "范围收窄"
+    priority: 100
+    required: true
+    archetypes: [execution, orchestration]
+    description: "流程邻域遍历、实体 FQN 收集、Schema 反查去重，产出 updated_scope 供子 Agent 使用"
+
+inputSchema:
+  type: object
+  properties:
+    selectOperators:
+      type: array
+      default: []
+      items:
+        type: string
+        description: "算子 ID（必须为模板已声明的 operatorId）"
+      description: "运行时选择要执行的算子子集。空/缺省=执行模板声明的全部算子"
+    entity_fqn:
+      type: string
+      description: "任务入口实体全限定名，用作 scope 收窄的锚点"
+    task_fqn:
+      type: string
+      description: "委派任务的全限定标识符"
+
+scopeBehavior:
+  acceptsScope: true
+  scopeRequired: true
+  producesUpdatedScope: true
+  scopeFields: [bundles, packages, domains, entity_schemas]
+  description: "必须提供 scope 入参以定义子 Agent 的认知边界；scope 收窄后产出更新的 scope 供子 Agent 使用"
+
+outputSchema:
+  type: DELEGATE_RESULT
+  formats: [json, prompt]
+
+contextMeta:
+  includeVersionAnchors: true
+  includeScopeApplied: true
+  includeTokenEstimate: true
+  includeSkippedEntities: true

@@ -1,0 +1,16 @@
+# ============================================================================
+# 认知基础架构层 (agent-cognition) 开发环境配置覆盖
+# Profile: dev
+# 激活方式: spring.profiles.active=dev
+# ============================================================================
+
+metaforge:
+  agent-cognition:
+    templates:
+      hot-reload:
+        # 开发环境启用外部模板热加载，方便调试
+        enabled: true
+        poll-interval-ms: 5000
+    timeouts:
+      # 开发环境放宽算子超时限制
+      operator-execute-default-ms: 30000

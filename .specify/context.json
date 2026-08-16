@@ -1,5 +1,5 @@
 {
-  "currentBc": "agent-consumption",
+  "currentBc": "agent-cognition-dimensions",
   "bcs": [
     {
       "name": "foundation-core",
@@ -22,12 +22,20 @@
       "path": "metaforge-parent/metaforge-compute-engine"
     },
     {
-      "name": "server-agent-cognition",
+      "name": "agent-consumption",
+      "path": "metaforge-cli"
+    },
+    {
+      "name": "agent-cognition-infrastructure",
       "path": "metaforge-parent/metaforge-agent-cognition"
     },
     {
-      "name": "agent-consumption",
-      "path": "metaforge-cli"
+      "name": "agent-cognition-dimensions",
+      "path": "metaforge-parent/metaforge-agent-cognition/metaforge-agent-cognition-dimensions"
+    },
+    {
+      "name": "agent-cognition-templates",
+      "path": "metaforge-parent/metaforge-agent-cognition/metaforge-agent-cognition-templates"
     }
   ]
 }

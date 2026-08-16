@@ -2,7 +2,7 @@
 
 **Feature Branch**: `001-semantic-query-reasoning`
 
-**Created**: 2026-08-01
+**Created**: 2026-07-30
 
 **Status**: Draft
 
@@ -10,7 +10,7 @@
 
 ## Clarifications
 
-### Session 2026-08-01
+### Session 2026-07-30
 
 - Q: 分页策略应如何分配？→ A: 检索型查询（FR-005）分页；结构型查询（邻接、子图、模式匹配、路径、溯源）返回完整结果，依赖深度/数量上限控制规模
 - Q: 超时熔断阈值的默认值应设为多少？→ A: 2000ms（统一默认值，可通过配置覆盖）
@@ -18,12 +18,12 @@
 - Q: FR-015 的四维过滤参数每维是必填还是可选？→ A: 全部可选，未传递的维度视为不限，调用方按需组合
 - Q: 结果截断时是否需要统一截断标记？→ A: 所有结果载体统一增加 truncated（boolean）+ truncatedReason（枚举：DEPTH_EXCEEDED / COUNT_EXCEEDED / TIMEOUT）字段
 
-### Session 2026-08-01
+### Session 2026-07-31
 
 - Q: 遍历最大深度硬上限 5 是否太小，能否支撑下游上下文构建 BC？→ A: 默认 5 不变，硬上限提升至 10（可配置范围 1-10），为下游上下文构建 BC 预留扩展空间。
 - Q: fqnPrefix 过滤的是元模型类型 FQN 还是数据实例 FQN？→ A: M1 层数据实例 FQN（metadata_entity.fqn / relation_instance.fqn 命名空间前缀），支持多前缀列表（OR 取并集）；M2 元模型类型通过 entityTypes/relationTypes 精确匹配。
 
-### Session 2026-08-01
+### Session 2026-08-02
 
 - Q: 传递关系与传导矩阵的配置方式？→ A: 开放配置文件（`application.yml`），在 `metaforge.compute-engine.transitivity-rules` 下定义 AssociationType 的传递属性映射表，脱离元模型独立维护。
 - Q: FR-004 图模式匹配通配符 `*`/`?` 的匹配粒度——匹配整个 FQN 还是仅名称段？→ A: 匹配整个 EntitySchema/RelationSchema FQN（不拆分名称段），`*` = 任意完整 FQN，`?` = 任意关系类型完整 FQN。

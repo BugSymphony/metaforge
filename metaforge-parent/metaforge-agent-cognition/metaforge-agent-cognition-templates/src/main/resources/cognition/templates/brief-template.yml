@@ -1,0 +1,107 @@
+templateId: BRIEF
+templateName: "任务/实体全景"
+description: "获取单个实体或任务的完整信息概览——从实体属性画像到流程蓝图、约束规则、关联能力与直连关系，形成结构化全景视图"
+version: "1.0.0"
+stage: P0
+enabled: true
+
+config:
+  global:
+    bundleVersionFqn: metaforge:1.0.0
+  operators:
+    ontological.entity-profile: {}
+    procedural.flow-blueprint:
+      taskEntitySchemaFqn: metaforge:1.0.0.agent.Task
+      entitySchemaFqn: metaforge:1.0.0.agent.ExecutionStep
+    procedural.adjacent-step:
+      relationSchemaFqn: metaforge:1.0.0.agent.StepHasNextStep
+      entitySchemaFqn: metaforge:1.0.0.agent.ExecutionStep
+    deontic.rule-listing:
+      relationSchemaFqn: metaforge:1.0.0.agent.RuleAppliesTo
+      entitySchemaFqn: metaforge:1.0.0.agent.ExecutionRule
+    capability.tool-discovery:
+      relationSchemaFqns:
+        - metaforge:1.0.0.agent.AgentHasCapability
+        - metaforge:1.0.0.agent.TaskRequiresCapability
+        - metaforge:1.0.0.agent.StepUsesCapability
+      entitySchemaFqn: metaforge:1.0.0.agent.Capability
+    relational.direct-link: {}
+
+operators:
+  - operatorId: ontological.entity-profile
+    name: "实体画像"
+    priority: 100
+    required: true
+    archetypes: [execution, exploration, audit, orchestration]
+    description: "返回实体完整画像——全属性字段、类型结构说明、领域定位路径"
+  - operatorId: procedural.flow-blueprint
+    name: "流程蓝图"
+    priority: 90
+    required: false
+    archetypes: [execution, orchestration]
+    description: "端到端步骤序列蓝图，标注每一步的入口/决策/出口类型"
+  - operatorId: procedural.adjacent-step
+    name: "前后步导航"
+    priority: 80
+    required: false
+    archetypes: [execution, orchestration]
+    description: "当前步骤的前一步与后一步局部导航"
+  - operatorId: deontic.rule-listing
+    name: "规则清单"
+    priority: 70
+    required: false
+    archetypes: [execution, audit]
+    description: "适用于该实体的约束规则清单（含约束级别、条件与执行动作）"
+  - operatorId: capability.tool-discovery
+    name: "工具发现"
+    priority: 50
+    required: false
+    archetypes: [execution, exploration]
+    description: "实体关联的能力/工具清单"
+  - operatorId: relational.direct-link
+    name: "直连关系"
+    priority: 30
+    required: false
+    archetypes: [execution, exploration, audit]
+    description: "实体 1 度出边与入边，按关系类型分组"
+
+inputSchema:
+  type: object
+  properties:
+    selectOperators:
+      type: array
+      default: []
+      items:
+        type: string
+        description: "算子 ID（必须为模板已声明的 operatorId）"
+      description: "运行时选择要执行的算子子集。空/缺省=执行模板声明的全部算子"
+    entity_fqn:
+      type: string
+      description: "目标实体全限定名"
+    cursor:
+      type: integer
+      description: "分页页码（1-based），用于分页遍历"
+      default: 0
+    page_size:
+      type: integer
+      description: "每页返回数量"
+      default: 20
+      minimum: 1
+      maximum: 100
+
+scopeBehavior:
+  acceptsScope: true
+  scopeRequired: false
+  producesUpdatedScope: false
+  scopeFields: [bundles, domains]
+  description: "接受可选 scope 限定查询范围；不产出更新的 scope"
+
+outputSchema:
+  type: BRIEF_RESULT
+  formats: [json, prompt]
+
+contextMeta:
+  includeVersionAnchors: true
+  includeScopeApplied: true
+  includeTokenEstimate: true
+  includeSkippedEntities: true

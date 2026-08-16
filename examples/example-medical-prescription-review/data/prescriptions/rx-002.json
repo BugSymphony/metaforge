@@ -1,0 +1,8 @@
+{
+  "rx_id": "RX-002",
+  "patient": "李患者",
+  "drug": "acetaminophen",
+  "single_dose_mg": 800,
+  "concurrent_drugs": ["warfarin"],
+  "prescribed_at": "2026-08-15T10:15:00Z"
+}

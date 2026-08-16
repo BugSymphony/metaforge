@@ -146,5 +146,5 @@ FQN 是元数据实例的唯一业务标识，文法与元模型体系完全对�
 
 ---
 
-**BC Constitution Version**: 1.0.0 | **Created**: 2026-08-01 | **Last Amended**: 2026-08-01
+**BC Constitution Version**: 1.0.0 | **Created**: 2026-07-28 | **Last Amended**: 2026-07-28
 <!-- BC constitution has independent semantic versioning, decoupled from global constitution version. -->

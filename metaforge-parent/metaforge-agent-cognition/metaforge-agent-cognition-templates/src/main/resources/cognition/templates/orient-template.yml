@@ -1,0 +1,73 @@
+templateId: ORIENT
+templateName: "业务域定位"
+description: "Agent 需要在业务域内定位关心的主题域、业务对象、可执行任务、Agent。支持任意 Bundle 定义的层级结构，支持跨 Bundle 下钻。每次返回一层 lazy 子节点，按 entity_type 分组。"
+version: "1.0.0"
+stage: P0
+enabled: true
+
+config:
+  global:
+    bundleVersionFqn: metaforge:1.0.0
+    levelAliases:
+      L1: metaforge:1.0.0.common.SubjectDomainGroup
+      L2: metaforge:1.0.0.common.SubjectDomain
+      L3: metaforge:1.0.0.common.BusinessObject
+      L4: metaforge:1.0.0.common.LogicalEntity
+      L5: metaforge:1.0.0.common.Attribute
+      Task: metaforge:1.0.0.agent.Task
+      Agent: metaforge:1.0.0.agent.Agent
+  operators:
+    ontological.domain-drilldown:
+      relationTypes:
+        - COMPOSITION
+
+operators:
+  - operatorId: ontological.domain-drilldown
+    name: "领域下钻"
+    priority: 100
+    required: true
+    archetypes: [execution, exploration]
+    description: "沿 L1-L5 主题域树逐层下钻，支持自动发现层级与类型别名解析"
+
+inputSchema:
+  type: object
+  properties:
+    selectOperators:
+      type: array
+      default: []
+      items:
+        type: string
+        description: "算子 ID（必须为模板已声明的 operatorId）"
+      description: "运行时选择要执行的算子子集。空/缺省=执行模板声明的全部算子"
+    parent_fqn:
+      type: string
+      description: "要展开的父节点 FQN（实例 FQN）。null=返回 scope 下顶层节点"
+    level:
+      type: string
+      description: "null=自动发现(按entity_type分组)；L1-L5=便捷别名；Task/Agent=类型别名；任意EntitySchemaFQN=精确过滤"
+    cursor:
+      type: integer
+      description: "分页页码（1-based），用于分页遍历"
+      default: 0
+    page_size:
+      type: integer
+      description: "每页返回数量"
+      default: 20
+      minimum: 1
+      maximum: 100
+
+scopeBehavior:
+  acceptsScope: true
+  scopeRequired: false
+  producesUpdatedScope: false
+  scopeFields: [bundles, domain_groups, domains, entity_schemas]
+  description: "接受可选 scope 限定定位范围；不产出更新的 scope"
+
+outputSchema:
+  type: ORIENT_RESULT
+  formats: [json, prompt]
+
+contextMeta:
+  includeVersionAnchors: true
+  includeScopeApplied: true
+  includeTokenEstimate: true

@@ -1,0 +1,58 @@
+# ============================================================================
+# MetaForge 认知服务 —— 快速测试编排
+#
+# 启动: docker compose up --build -d
+# 停止: docker compose down
+# 清空数据(含卷): docker compose down -v
+#
+# 服务:
+#   postgres      - PostgreSQL 16（元数据存储，boot 启动自动跑 V4 Flyway 迁移）
+#   metaforge-boot - 认知服务（6 模板: DISCOVER/ORIENT/BRIEF/GUIDE/FORECAST/DELEGATE），
+#                    启动后自动应用 seed（基础 agent 库 + 4 个示例域）
+# ============================================================================
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: metaforge-postgres
+    environment:
+      POSTGRES_USER: metaforge
+      POSTGRES_PASSWORD: metaforge
+      POSTGRES_DB: metaforge
+      TZ: Asia/Shanghai
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U metaforge -d metaforge"]
+      interval: 5s
+      timeout: 3s
+      retries: 15
+      start_period: 5s
+
+  metaforge-boot:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: metaforge-boot
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      # boot 数据源指向 postgres 服务
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/metaforge
+      SPRING_DATASOURCE_USERNAME: metaforge
+      SPRING_DATASOURCE_PASSWORD: metaforge
+      # seed 应用连接参数
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: metaforge
+      DB_PASSWORD: metaforge
+      DB_NAME: metaforge
+      TZ: Asia/Shanghai
+    ports:
+      - "8080:8080"
+
+volumes:
+  pgdata:

@@ -110,6 +110,7 @@ public class RelationQueryServiceImpl implements RelationQueryService {
                         request.getSourceEntityFqns(),
                         request.getTargetEntityFqns(),
                         request.getRelationSchemaFqns(),
+                        request.getRelationSchemaFqnPrefix(),
                         request.getNameKeyword(),
                         request.getDescriptionKeyword()),
                 pageable);

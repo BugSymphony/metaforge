@@ -4,7 +4,7 @@
 ===============================================================================
   Version Change: 1.0.0 → 1.1.0 (MINOR)
   Parent Global Constitution: 1.0.0
-  Last Amended: 2026-08-01 | Created: 2026-08-01
+  Last Amended: 2026-07-25 | Created: 2026-07-20
 
   Principle Summary:
     ✅ Modified BC-Specific: I. 三层正交架构 — 重构为 REQ §3.1 严格三层，增加 Package 嵌套深度上限 5 层及各层实体定位表格
@@ -511,4 +511,4 @@ Bundle 发布操作执行以下全量校验，任一失败即回滚：
 
 ---
 
-**BC Constitution Version**: 1.1.0 | **Created**: 2026-08-01 | **Last Amended**: 2026-08-01
+**BC Constitution Version**: 1.1.0 | **Created**: 2026-07-20 | **Last Amended**: 2026-07-25

@@ -47,7 +47,7 @@
         </dependency>
         <dependency>
             <groupId>com.metaforge</groupId>
-            <artifactId>metaforge-agent-cognition-core</artifactId>
+            <artifactId>metaforge-agent-cognition-starter</artifactId>
         </dependency>
     </dependencies>
 

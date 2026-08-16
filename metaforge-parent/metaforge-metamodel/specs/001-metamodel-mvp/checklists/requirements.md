@@ -1,7 +1,7 @@
 # Specification Quality Checklist: 元模型治理核心能力 MVP
 
 **Purpose**: Validate specification completeness and quality before proceeding to planning
-**Created**: 2026-08-01
+**Created**: 2026-07-25
 **Feature**: [spec.md](../spec.md)
 
 ## Content Quality

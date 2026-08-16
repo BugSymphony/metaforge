@@ -1,0 +1,8 @@
+{
+  "rx_id": "RX-001",
+  "patient": "张患者",
+  "drug": "ibuprofen",
+  "single_dose_mg": 400,
+  "concurrent_drugs": [],
+  "prescribed_at": "2026-08-15T09:30:00Z"
+}

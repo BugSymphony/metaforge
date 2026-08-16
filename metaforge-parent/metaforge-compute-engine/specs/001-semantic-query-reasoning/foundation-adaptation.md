@@ -2,7 +2,7 @@
 
 **Based on**: `foundation-core` contracts (v1.0.0)
 **BC**: metaforge-compute-engine（语义查询与推理引擎）
-**Date**: 2026-08-01
+**Date**: 2026-08-02
 
 ---
 

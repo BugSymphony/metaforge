@@ -2,7 +2,7 @@
 
 **Feature Branch**: `001-relation-instance-lifecycle`
 
-**Created**: 2026-08-01
+**Created**: 2026-07-29
 
 **Status**: Draft
 
@@ -10,7 +10,7 @@
 
 ## Clarifications
 
-### Session 2026-08-01
+### Session 2026-07-29
 
 - Q: 什么构成「强依赖」应阻止关系下线？ → A: 仅目标关系被其他关系显式声明为依赖关系端点（relation-type 为依赖/必要条件类，如 "depends-on"、"requires"）时视为强依赖并拦截下线，其他关系类型（如 "contains"、"maps-to"）不影响下线。
 - Q: 关系 FQN 三元组分隔符选择 `.` 还是 `#`？ → A: 采用 `#` 分隔符，格式为 `{源实体FQN}#{关系类型FQN}#{目标实体FQN}`

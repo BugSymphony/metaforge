@@ -397,7 +397,7 @@ public @interface ValidEnum {
 
 **Logback 默认格式**:
 ```
-[2026-08-01 14:30:00.123] [virtual-1] [INFO] [a1b2c3d4...] [c.m.s.controller.UserController] - 查询用户列表: userId=42
+[2026-07-23 14:30:00.123] [virtual-1] [INFO] [a1b2c3d4...] [c.m.s.controller.UserController] - 查询用户列表: userId=42
 ```
 
 **日志级别规则**:

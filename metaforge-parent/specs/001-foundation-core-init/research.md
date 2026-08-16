@@ -33,7 +33,7 @@ public class VirtualThreadConfig {
 **Key version choices**:
 | 依赖 | 版本 | 选择理由 |
 |------|------|----------|
-| Spring Boot | 3.4.3 | 截至 2026-08-01 最新稳定版，完整支持 Java 21 虚拟线程 |
+| Spring Boot | 3.4.3 | 截至 2026-07 最新稳定版，完整支持 Java 21 虚拟线程 |
 | Spring AI | 1.0.0-M6 | MCP Server 发布所需，Milestone 版本在 MVP 阶段可接受 |
 | Hibernate | 6.6.x | Spring Boot 3.4 默认版本，支持 JSONB 映射 |
 | Flyway | 10.x | Spring Boot 3.4 默认版本，原生 PostgreSQL 支持 |

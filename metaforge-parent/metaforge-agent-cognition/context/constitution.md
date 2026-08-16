@@ -2,182 +2,157 @@
 ================================================================================
   Sync Impact Report
 ================================================================================
-  BC Constitution Version: N/A (placeholder skeleton) → 1.0.0
+  BC Constitution Version Change: N/A (placeholder skeleton) → 1.0.0
   Parent Global Constitution Version: 1.0.0
+  Last Amended Date: 2026-08-11
 
   BC-Specific Principles:
-    ✅ Added: 无状态 FQN 寻址原则 (MUST)
-    ✅ Added: 交付 M1 仅过滤 M2 原则 (MUST)
-    ✅ Added: 零 LLM 零向量原则 (MUST)
-    ✅ Added: 数据主权不持有原则 (MUST)
-    ✅ Added: 结构化参数入参原则 (MUST)
-    ✅ Added: 自包含标准化输出原则 (SHOULD)
+    ✅ Added: I. 纯机制层定位 (MUST)
+    ✅ Added: II. 声明式扩展铁律 (MUST)
+    ✅ Added: III. 契约与实现分层 (MUST)
+    ✅ Added: IV. 统一认知入口 (MUST)
+    ✅ Added: V. 无 LLM 依赖 (MUST)
+    ✅ Added: VI. 注册与校验治理 (SHOULD)
+    ✅ Added: VII. Scope 边界强制 (SHOULD)
+    ✅ Added: VIII. 输出自包含与等价双格式 (SHOULD)
 
   Custom Sections:
-    ✅ Added: 核心能力 — 14 内置认知视角、统一查询引擎、深度裁剪与 Agent 原型适配、
-              双输出格式、changeWatch 变更感知
-    ✅ Added: MVP 边界 — 不实现完整授权体系、向量语义匹配、LLM 辅助推理
+    ✅ Added: 扩展机制约束
+    ✅ Added: 无状态与数据主权约束
+    ✅ Added: 可观测与配置治理约束
 
   BC Overrides:
-    ✅ Added: Override VI. 合约化双协议标准接口 (SHOULD) — REST only, MCP 委托
-              metaforge-consumer
-    ✅ Added: Override VIII. Agent 友好型输出 (SHOULD) — json/prompt 双格式原生交付
+    ✅ Added: Override 1 — VI. 合约化双协议标准接口 (SHOULD→MUST)
+    ✅ Added: Override 2 — VIII. Agent 友好型输出 (SHOULD→细化)
+
+  Template Synchronization:
+    ✅ N/A — No BC-specific plan/spec templates exist; alignment not required.
 
   Deferred TODOs: None
-
-  Rationale: Initial concrete constitution for 元认知指导层 (CognitionGuidance) BC.
-  The skeleton was fully placeholder; this revision fills all BC-specific principles,
-  custom sections, and override entries with substantive governance content.
 ================================================================================
 -->
 
-# 元认知指导层 (CognitionGuidance) Bounded Context Constitution
+# metaforge-agent-cognition Bounded Context Constitution
+<!-- BC-level governance constitution. Inherits all rules from the global system constitution as read-only baseline. -->
+<!-- OVERRIDE RULE: Only SHOULD/MAY level principles from the parent global constitution can be overridden. MUST level principles CANNOT be modified or removed. -->
 
-<!-- BC 级治理宪法。以全局系统宪法为只读基线继承所有规则。 -->
-<!-- 覆盖规则：仅可覆盖父全局宪法中的 SHOULD/MAY 级原则，MUST 级原则不得修改或移除。 -->
+**BC Identity**: 平台机制层（Platform Mechanism）——负责"怎么做"（路由、加载、编排、输出），不含任何具体维度实现与模板内容。
 
 **Parent Version**: 1.0.0
-<!-- 可读追溯标记。不执行版本对齐验证。记录本 BC 宪法创建/最后更新时引用的全局宪法版本。-->
+<!-- Human-readable traceability marker only. No version alignment validation during AI merge. Records the global constitution version referenced when this BC constitution was created/last updated. -->
+
+**拆分架构**: 本 BC 拆分为契约层与实现层两个 Maven 模块；依赖 foundation 与底层 BC 的公开 api。
 
 ---
 
 ## BC-Specific Principles
+<!-- Exclusive core principles for this BC only, not inherited from the global constitution. Follow MUST/SHOULD/MAY level specification. Principle names must not duplicate global constitution principles. -->
+### I. 纯机制层定位 (MUST)
 
-<!-- 本 BC 独有核心原则，不从全局宪法继承。遵循 MUST/SHOULD/MAY 级别规范。原则名称不得与全局宪法原则重复。-->
+本 BC 只承载平台机制，禁止内嵌任何具体维度实现或模板内容；不持有底层数据主权，
+不持久化业务数据与任务上下文，仅存储自身配置。所有具体认知维度由下游 BC 通过
+SPI 挂载实现，本 BC 仅负责编排与路由。
 
-### I. 无状态 FQN 寻址原则 (MUST)
+### II. 声明式扩展铁律 (MUST)
 
-所有查询端点幂等、无任务 ID、无会话上下文；每次请求自包含，不依赖服务端状态存储。
-Bundle 范围通过 `entity_fqn` 的 FQN 前缀即席恢复，无需预先注册或会话绑定。
-任何查询的结果仅由传入参数决定，不受历史请求或外部状态影响。
+一切新认知能力通过声明式配置 + SPI 实现扩展，禁止修改引擎核心代码。
+内置认知分类体系（8 分类）为封闭集合，不可配置扩展。
+新增能力 = 声明式元文件 + SPI 实现 + 能力注册，三件套齐备即可扩展，
+无需改动引擎核心；新增能力只能在既有分类下扩展，不得创建新分类。
 
-### II. 交付 M1 仅过滤 M2 原则 (MUST)
+### III. 契约与实现分层 (MUST)
 
-元模型（EntitySchema / RelationSchema）仅作为查询过滤条件与语义解释来源使用，
-永不作为交付主体返回给消费端。当 M1 层（实例数据/具体业务实体）缺失时，
-必须返回空目录并在响应中明确标注缺失原因，禁止降级输出 M2 层骨架结构作为替代结果。
-M2 层始终处于过滤角色而非填充角色。
+契约层只含接口与数据结构，不依赖任何实现模块；实现层经容器发现 SPI 实现，
+不编译依赖具体能力模块；所有能力以共享契约驱动。契约层模块的编译 classpath
+不得包含任何第三方实现或具体能力模块的坐标。
 
-### III. 零 LLM 零向量原则 (MUST)
+### IV. 统一认知入口 (MUST)
 
-本 BC 不依赖任何大语言模型（LLM）或向量语义相似度计算。
-所有查询相关性排序通过 AssociationType 语义约束表达，结合图拓扑距离实现排序逻辑。
-不使用 embedding、vector store 或任何基于语义近似度的匹配算法。
-自然语言到结构化参数的转换职责完全归属 metaforge-consumer。
+全部认知能力经单一统一入口暴露；入参为确定性结构化参数，不接受自然语言；
+错误统一经标准化错误体系呈现，不得以内部异常形态外泄。
+统一入口负责参数校验、路由分发、结果聚合与异常标准化转换。
 
-### IV. 数据主权不持有原则 (MUST)
+### V. 无 LLM 依赖 (MUST)
 
-本 BC 不存储任何元数据副本、关系副本、历史快照、会话上下文或继承链信息。
-仅持久化自身运营所需的 YAML 配置（cognition-templates.yml / cognition-perspectives.yml）。
-所有运行时元数据通过即席查询上游 BC 获取，查询完成后不保留任何数据痕迹。
+认知能力为确定性计算，不依赖 LLM 或向量语义相似度作为实现前提。
+所有分类、匹配、推理逻辑基于规则引擎或确定性算法，结果可复现、可审计。
 
-### V. 结构化参数入参原则 (MUST)
+### VI. 注册与校验治理 (SHOULD)
 
-所有查询端点仅接受结构化参数（JSON body / query params），不接受自然语言文本作为查询条件。
-自然语言到结构化查询参数的转换由 metaforge-consumer 层完成，
-本 BC 收到的一定是已解析完成的确定型结构化参数。
+模板与维度必须经注册表统一管理；注册前完成完整性、合法性校验，
+校验不通过的能力不得对外提供，且不得影响已注册能力。
+注册表支持运行时热加载与卸载，变更事件可被监听。
 
-### VI. 自包含标准化输出原则 (SHOULD)
+### VII. Scope 边界强制 (SHOULD)
 
-所有查询输出以 FQN 为核心标识，内联完整语义信息，消费端无需对同一 BC 发起二次查询
-即可获取全部所需上下文。统一根 JSON 结构包含 `context_meta`（含 `data_version_anchors`）
-及按认知视角组织的章节内容，每项输出均为自包含的完整认知单元。
+认知查询必须受 scope 边界约束；越界内容不得出现在输出中，
+并须在输出中显式标注被裁剪/跳过的范围。
+Scope 由 Agent 导入声明与查询参数共同决定，取最小交集。
 
----
+### VIII. 输出自包含与等价双格式 (SHOULD)
 
-## 核心能力
-
-<!-- 元认知指导层的功能能力边界与约束。-->
-
-### 内置认知视角
-
-本 BC 提供 14 个内置认知视角维度，覆盖元认知查询的完整语义空间：
-
-| 视角 | 用途 |
-|------|------|
-| `entity_profile` | 实体概要信息（类型、属性、描述） |
-| `domain_location` | 实体在 Bundle/Package 层级中的定位 |
-| `composition_tree` | 实体的组合关系树 |
-| `relationship_graph` | 实体关联关系图谱 |
-| `constraint_set` | 实体约束条件集合 |
-| `capability_catalog` | 实体支持的操作/能力目录 |
-| `flow_blueprint` | 业务流程蓝图 |
-| `decision_matrix` | 决策条件与分支矩阵 |
-| `impact_trace` | 变更影响追踪链路 |
-| `prerequisite_chain` | 前置依赖链 |
-| `domain_navigation` | 领域导航路径 |
-| `instance_catalog` | 业务实例目录 |
-| `bundle_directory` | Bundle 级目录概览 |
-| `schema_inventory` | 元模型清单 |
-
-### 统一查询引擎
-
-`cognitionGuidance` 端点作为统一元认知查询入口，基于 `context_mode` 参数
-（`BUNDLE_LEVEL` / `ENTITY_LEVEL`）自动推导上下文范围，调度相应视角维度执行器。
-
-### 深度裁剪与 Agent 原型适配
-
-支持三级深度裁剪：
-- **L1**：概要级，仅返回核心标识与关键属性
-- **L2**：标准级，返回完整语义但省略扩展引用
-- **L3**：深度级，返回全量信息含关联实体引用
-
-支持四种 Agent 原型适配：
-- **execution**：执行型 Agent，侧重操作指引与参数约束
-- **exploration**：探索型 Agent，侧重关系图谱与领域导航
-- **audit**：审计型 Agent，侧重变更追踪与约束校验
-- **orchestration**：编排型 Agent，侧重流程蓝图与依赖链
-
-### 层级化作用域收窄
-
-通过 `scope_mode` 参数控制作用域行为：
-- **INHERITED**：包含父级领域继承的约束与元数据
-- **PURE**：仅返回当前实体声明的内容，排除继承来源
-
-### 变更影响感知
-
-`changeWatch` 机制支持对指定 FQN 关联的变更事件进行影响范围追溯，
-输出受影响的下游实体与关联链路。
-
-### 双输出格式
-
-所有端点支持两种输出格式，语义完全一致：
-- **json**：结构化 JSON，可直接程序化消费
-- **prompt**：Markdown 格式语义说明，可直接注入大模型上下文窗口
+输出必须自包含（消费端无需二次查询底层能力）；支持双格式呈现（JSON Schema +
+结构化上下文块），两种格式语义内容完全等价。
+输出携带完整上下文元信息（来源 BC、版本、scope 范围、裁剪标记）。
 
 ---
 
-## MVP 边界
+## 扩展机制约束
+<!-- 定义新认知能力扩展的约束与流程规范。-->
 
-<!-- MVP 阶段范围界定，明确当前交付范围与后续扩展边界。-->
+- 新增能力必须提供声明式元文件（描述能力名称、所属分类、依赖、参数 schema），
+  元文件格式由契约层定义。
+- SPI 实现需满足契约层接口约束，实现类经 `ServiceLoader` 或容器注入机制发现。
+- 能力注册在 BC 启动时自动完成；注册失败的 SPI 实现记录错误日志并跳过，
+  不得阻塞引擎启动。
+- 内置认知分类体系为封闭集合（8 分类），新增分类需修订 BC 宪法
+  并升级 MAJOR 版本。
 
-本 BC 在 MVP 阶段**不实现**以下能力：
+## 无状态与数据主权约束
+<!-- 本 BC 无状态运行边界与数据主权声明。-->
 
-- **完整授权体系**：跨 Bundle 可见性过滤的细粒度权限控制不在 MVP 范围内；
-  当前阶段仅依赖上游 BC 传递的已授权数据范围。
-- **向量语义匹配**：不实现基于向量语义相似度的 Bundle 匹配或实体推荐。
-- **LLM 辅助推理**：不集成 LLM 进行查询意图补全、结果摘要或相关性重排序。
+- 本 BC 无状态运行，不保存会话、快照、任务上下文或任何形式的运行时状态。
+- 不触碰业务数据存储；所有输入数据由调用方传入，输出结果自包含、
+  可直接注入消费端，无需消费端回查底层 BC。
+- 自身配置（引擎参数、注册表、路由表）以配置文件形式持久化，
+  不依赖外部数据库或缓存。
 
-以上能力纳入后续迭代规划，MVP 阶段聚焦结构化认知查询引擎的核心链路验证。
+## 可观测与配置治理约束
+<!-- 行为参数配置规范与可观测性治理。-->
+
+- 对外错误统一走标准化错误体系（错误码 + 错误级别 + 上下文消息），
+  具备可诊断性。错误码由契约层统一定义，实现层不得创建私有错误码。
+- 行为参数（默认深度、原型、预算、超时、扫描路径等）必须可配置、
+  支持环境变量覆盖，且零配置可用（所有参数具备合理默认值）。
+- 引擎关键路径输出结构化日志（入口入参校验、SPI 加载、路由分发、
+  结果聚合），支持消费端诊断与审计。
 
 ---
 
 ## BC Overrides
+<!-- Selective override of parent global constitution SHOULD/MAY level principles only. Each entry must reference the exact parent principle name + explicit override rationale. MUST level principles are forbidden to be overridden here. -->
+### Override 1: VI. 合约化双协议标准接口 (SHOULD→MUST)
 
-<!-- 选择性覆盖父全局宪法的 SHOULD/MAY 级原则。每项必须引用父原则确切名称并提供 Rationale。-->
+- **Original Parent Rule**: 全局宪法 VI 要求所有对外能力通过 REST + MCP 双协议
+  标准化接口发布（SHOULD 级建议）。
+- **Override Content**: 本 BC 对外认知能力必须同时经 REST 与 MCP 双通道交付，
+  内部实现不对外暴露，不得在实现中被弱化为单一通道。任一通道缺失视为未完成交付。
+- **Rationale**: 本 BC 是认知能力统一门面，消费方包括管理系统（REST）与
+  Agent 生态（MCP），双通道为默认交付形态，必须强制而非建议。
 
-### Override 1: VI. Agent 友好型输出 (SHOULD)
+### Override 2: VIII. Agent 友好型输出 (SHOULD→细化)
 
-- **原始父规则**：所有查询与推理结果必须输出为低理解成本的结构化格式（如 JSON Schema、
-  结构化上下文块等），可直接注入 Agent 上下文，无需大模型二次解析。
-- **覆盖后内容**：本 BC 直接产出面向 Agent 的元认知交付物——统一根 JSON 结构化输出与
-  Markdown 语义说明（prompt 格式，可直接注入大模型上下文窗口），两种格式语义完全一致。
-  输出以 FQN 为核心标识，内联完整语义，消费端无需二次查询。
-- **Rationale**：本 BC 本质是 Agent 认知中间层，Agent 友好型输出是其核心交付契约，
-  应由本 BC 原生承担而非依赖上层转换。json + prompt 双格式确保同时满足程序化消费
-  与 LLM 上下文注入两种路径。
+- **Original Parent Rule**: 全局宪法 VIII 要求所有查询与推理结果输出为低理解成本
+  的结构化格式，可直接注入 Agent 上下文（SHOULD 级建议）。
+- **Override Content**: 在全局 VIII 基础上细化增强——双格式语义完全等价、
+  输出自包含（含完整上下文元信息）、超限自动裁剪并显式标记。
+  每份输出必须携带：来源 BC 标识、元模型版本、scope 范围、裁剪标记、
+  生成时间戳与置信度。
+- **Rationale**: 输出组装是本 BC 核心职责，直接决定 Agent 认知质量。
+  本 Override 属细化强化而非弱化——全局 VIII 的"低理解成本结构化格式"约束
+  完全保留，在此基础上增加自包含性与可追溯性要求。
 
 ---
 
-**BC Constitution Version**: 1.0.0 | **Created**: 2026-08-01 | **Last Amended**: 2026-08-01
-<!-- BC 宪法采用独立语义化版本管理，与全局宪法版本解耦。-->
+**BC Constitution Version**: 1.0.0 | **Created**: 2026-08-11 | **Last Amended**: 2026-08-11
+<!-- BC constitution has independent semantic versioning, decoupled from global constitution version. -->

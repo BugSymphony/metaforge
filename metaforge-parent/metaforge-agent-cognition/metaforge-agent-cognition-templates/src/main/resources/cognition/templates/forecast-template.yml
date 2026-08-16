@@ -1,0 +1,95 @@
+templateId: FORECAST
+templateName: "变更影响链路"
+description: "评估变更的波及影响——从邻域探索、正向影响扩散、反向依赖溯源，到风险评级、约束冲突检测、回归范围建议，形成完整的变更影响分析链路"
+version: "1.0.0"
+stage: P0
+enabled: true
+
+config:
+  global:
+    bundleVersionFqn: metaforge:1.0.0
+  operators:
+    relational.neighborhood: {}
+    relational.impact-forward: {}
+    relational.impact-backward: {}
+    relational.risk-assessment: {}
+    deontic.constraint-check: {}
+    capability.regression-scope: {}
+
+operators:
+  - operatorId: relational.neighborhood
+    name: "邻域探索"
+    priority: 100
+    required: true
+    archetypes: [execution, audit]
+    description: "N 度邻域（1-3 度）内的关联实体列表"
+  - operatorId: relational.impact-forward
+    name: "正向影响扩散"
+    priority: 95
+    required: true
+    archetypes: [execution, audit]
+    description: "从变更起点沿出边 BFS 扩散，列出受影响实体及影响规模"
+  - operatorId: relational.impact-backward
+    name: "反向依赖溯源"
+    priority: 90
+    required: true
+    archetypes: [execution, audit]
+    description: "从变更起点沿入边逆 BFS 追溯，列出依赖方及依赖规模"
+  - operatorId: relational.risk-assessment
+    name: "风险评级"
+    priority: 85
+    required: false
+    archetypes: [execution, orchestration]
+    description: "综合影响规模/依赖强度/约束冲突，输出风险分值、等级与处理建议"
+  - operatorId: deontic.constraint-check
+    name: "规则冲突检测"
+    priority: 80
+    required: false
+    archetypes: [execution, audit]
+    description: "评估变更在影响范围内是否触及约束规则，判定冲突与阻断"
+  - operatorId: capability.regression-scope
+    name: "回归范围建议"
+    priority: 70
+    required: false
+    archetypes: [execution, orchestration]
+    description: "根据影响范围反查关联能力/步骤/任务，形成回归验证清单"
+
+inputSchema:
+  type: object
+  properties:
+    selectOperators:
+      type: array
+      default: []
+      items:
+        type: string
+        description: "算子 ID（必须为模板已声明的 operatorId）"
+      description: "运行时选择要执行的算子子集。空/缺省=执行模板声明的全部算子"
+    entity_fqn:
+      type: string
+      description: "变更起始实体全限定名"
+    change_type:
+      type: string
+      description: "变更类型——MODIFY、DELETE、CREATE（影响规则冲突判定）"
+      enum: [MODIFY, DELETE, CREATE]
+    max_depth:
+      type: integer
+      description: "最大追溯深度（1-5 度）"
+      default: 3
+      minimum: 1
+      maximum: 5
+
+scopeBehavior:
+  acceptsScope: true
+  scopeRequired: false
+  producesUpdatedScope: false
+  scopeFields: [bundles]
+  description: "接受可选 scope 限定影响分析范围；不产出更新的 scope"
+
+outputSchema:
+  type: FORECAST_RESULT
+  formats: [json, prompt]
+
+contextMeta:
+  includeVersionAnchors: true
+  includeScopeApplied: true
+  includeTokenEstimate: true

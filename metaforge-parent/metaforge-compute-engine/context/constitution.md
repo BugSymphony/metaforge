@@ -137,5 +137,5 @@ Neo4j、RabbitMQ/Kafka、Redis、LLM 推理服务。
 
 ---
 
-**BC Constitution Version**: 1.0.0 | **Created**: 2026-08-01 | **Last Amended**: 2026-08-01
+**BC Constitution Version**: 1.0.0 | **Created**: 2026-07-30 | **Last Amended**: 2026-07-30
 <!-- BC 宪法拥有独立的语义化版本，与全局宪法版本解耦。-->

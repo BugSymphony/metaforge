@@ -1,6 +1,6 @@
 # Implementation Plan: foundation-core 基座初始化
 
-**Branch**: `001-foundation-core-init` | **Date**: 2026-08-01 | **Spec**: [spec.md](./spec.md)
+**Branch**: `001-foundation-core-init` | **Date**: 2026-07-23 | **Spec**: [spec.md](./spec.md)
 
 **Input**: Feature specification from `/specs/001-foundation-core-init/spec.md`
 
@@ -52,12 +52,12 @@
 | I | 纯技术属性铁则 | MUST | foundation-core 仅承载通用技术能力（缓存、序列化、校验、文档等），不包含任何业务领域逻辑。FR-002/FR-003 明确禁止业务语义。 | PASS |
 | II | 唯一基座原则 | MUST | foundation-core 为全局唯一技术基座，FR-025 禁止业务 BC 重复实现已提供的通用能力。 | PASS |
 | III | 单向依赖铁则 | MUST | FR-005 定义严格单向分层依赖，metaforge-boot 通过 Maven Enforcer 强制禁止反向依赖。 | PASS |
-| IV | 零侵入接入原则 | MUST | FR-023 定义 4 步接入，无需继承基类/实现接口。**与 BC 宪法的轻微差异**：BC 宪法提及 `metaforge.foundation.<capability>.enabled` 开关，但 spec FR-025 明确所有横切能力默认生效、不提供开关配置。spec 的澄清决定（Session 2026-08-01）已明确此策略变更。 | PASS (spec overrides) |
-| V | 契约与兼容准则 | MUST | FR-030~FR-037 定义了 6 份契约文档，存放于 `specs/<feature_dir>/contracts/`。**差异说明**：BC 宪法要求契约存放于 `context/contracts/`，但 spec 澄清决定（Session 2026-08-01）明确 `context/contracts/` 仅供 `speckit.contract.export` 命令导出，plan/generate 阶段不得直接写入。 | PASS (spec overrides) |
+| IV | 零侵入接入原则 | MUST | FR-023 定义 4 步接入，无需继承基类/实现接口。**与 BC 宪法的轻微差异**：BC 宪法提及 `metaforge.foundation.<capability>.enabled` 开关，但 spec FR-025 明确所有横切能力默认生效、不提供开关配置。spec 的澄清决定（Session 2026-07-20）已明确此策略变更。 | PASS (spec overrides) |
+| V | 契约与兼容准则 | MUST | FR-030~FR-037 定义了 6 份契约文档，存放于 `specs/<feature_dir>/contracts/`。**差异说明**：BC 宪法要求契约存放于 `context/contracts/`，但 spec 澄清决定（Session 2026-07-20）明确 `context/contracts/` 仅供 `speckit.contract.export` 命令导出，plan/generate 阶段不得直接写入。 | PASS (spec overrides) |
 | VI | SPI 扩展治理 | MUST | FR-021/FR-022 定义六大 SPI 扩展点，FR-022 确保 BC 级隔离。SPI 接口定义于 metaforge-common 的 contracts 包中。 | PASS |
 | VII | 强制接入原则 | MUST | FR-023 要求业务 BC 依赖 metaforge-framework 并在 metaforge-boot 中注册 GAV。**差异说明**：BC 宪法原文使用 `foundation-core` 为依赖目标，spec 已将依赖目标细化为 `metaforge-framework`（传递提供 common + Spring/JPA/Web/Cache工具层），版本由 metaforge-parent BOM 统一管控。 | PASS (spec overrides) |
 | VIII | 能力解耦 | SHOULD | FR-011~FR-017 各横切能力通过独立 AutoConfiguration 类实现，分别对应缓存/序列化/校验/文档/i18n/可观测性/安全。 | PASS |
-| IX | 分层依赖约束 | SHOULD | FR-002/FR-002a 明确 common/framework 两层依赖边界。**差异说明**：BC 宪法要求 common 层严禁引入 Jackson（`import com.fasterxml.jackson`），spec FR-002 允许 Jackson + SLF4J API 作为基础序列化/日志门面。spec 澄清决定（Session 2026-08-01）明确此为有意识的设计决策：Jackson 为纯 API 级依赖，无容器耦合，确保 common 可在非 Spring 环境复用。BC 宪法中此原则为 SHOULD 级，spec 可覆盖。 | PASS (spec overrides) |
+| IX | 分层依赖约束 | SHOULD | FR-002/FR-002a 明确 common/framework 两层依赖边界。**差异说明**：BC 宪法要求 common 层严禁引入 Jackson（`import com.fasterxml.jackson`），spec FR-002 允许 Jackson + SLF4J API 作为基础序列化/日志门面。spec 澄清决定（Session 2026-07-23）明确此为有意识的设计决策：Jackson 为纯 API 级依赖，无容器耦合，确保 common 可在非 Spring 环境复用。BC 宪法中此原则为 SHOULD 级，spec 可覆盖。 | PASS (spec overrides) |
 | X | 数据边界 | MUST | foundation-core 不持有业务数据。FR-020/FR-020a 明确数据访问仅提供通用技术封装，不定义业务 Schema。 | PASS |
 
 ### Gate Verdict

@@ -2,7 +2,7 @@
 
 **Feature Branch**: `001-foundation-core-init`
 
-**Created**: 2026-08-01
+**Created**: 2026-07-19
 
 **Status**: Draft
 
@@ -10,7 +10,7 @@
 
 ## Clarifications
 
-### Session 2026-08-01
+### Session 2026-07-20
 
 - Q: 启动入口与 BC 聚合机制 — metaforge-boot 作为唯一启动入口，BC 是否需要依赖 metaforge-server？ → A: metaforge-boot 是唯一启动入口，静态声明所有 BC 为依赖；metaforge-server 是平台级能力由 boot 直接引入；BC 不依赖 metaforge-server，通过 metaforge-boot 聚合所有 BC 获得完整运行时环境（boot → BC → server → common 链不成立，改为 boot → server + 全部 BC，BC 仅声明最小化框架依赖）。
 - Q: BC 模块的框架依赖来源（BC 不依赖 metaforge-server 时如何获得 Spring 等框架类型）？ → A: BC 模块自己声明最小化框架依赖（如 spring-boot-starter-web），版本由 metaforge-parent BOM 统一管控，不依赖 metaforge-server。
@@ -32,7 +32,7 @@
 - Q: Redis 或分布式缓存是否在 MVP 范围？ → A: 不在范围，MVP 仅 Caffeine 本地缓存，docker-compose 不包含 Redis
 - Q: 数据库 Schema 迁移策略？ → A: foundation-core 强制统一 Flyway，集中管理所有 BC 迁移脚本
 
-### Session 2026-08-01
+### Session 2026-07-23
 
 - Q: metaforge-common 依赖边界——允许引入哪些轻量级依赖？ → A: common 层允许 Jackson（core + databind + annotations）作为 JSON 序列化基础设施和 SLF4J API 作为日志门面；严禁引入 Spring Framework、Servlet API、JDBC、JPA/Hibernate、Caffeine、Flyway、RabbitMQ/Kafka 等容器/框架级依赖。Jackson 和 SLF4J API 均为纯 API 级依赖，无容器耦合，确保 common 可在非 Spring 环境复用。
 - Q: 是否新增中间模块承载第三方框架通用工具/支持类？ → A: 新增 `metaforge-framework` 模块（位于 common 和 server 之间），封装 Spring 工具、JPA/Hibernate 查询辅助、Web 工具、缓存抽象模板、测试基类等框架感知工具。该模块允许依赖 Spring Framework、JPA/Hibernate、Servlet API、Caffeine 等框架库，仅提供工具封装，不包含自动装配逻辑（AutoConfiguration 由 metaforge-server 负责）。
@@ -42,7 +42,7 @@
 - Q: 横切技术能力是否需要配置开关？ → A: 已确认不需要。所有横切能力默认生效，不提供 `metaforge.foundation.<capability>.enabled` 开关。
 - Q: 分页封装——common 是否需要独立分页 DTO 而非仅依赖 Spring Data Pageable？ → A: `metaforge-common` 定义纯 Java 分页 DTO（`PageRequest`、`PageResult<T>`）和内存分页工具 `PageUtils`，不依赖 Spring Data。`metaforge-framework` 提供 `PageHelper` 转换工具（common DTO ↔ Spring `Pageable`/`Page`）。BC 编码层面使用 common DTO 解耦框架，内部可继续用 Spring Data JPA 分页。
 - Q: 契约文档如何组织，避免过于分散？ → A: 精简为 6 份契约文档：`api-contracts.md`（SPI+DTO+API+异常+校验+运行时行为，BC 编码消费的一站式手册）、`rest-api-contract.md` + `.yaml`（REST 响应格式+错误码）、`platform-capabilities.md`（平台能力声明清单，逐项告知 BC"已提供勿重复"）、`configuration-schema.md`（配置项参考）、`build-system-integration.md`（构建集成模板）。
-- Q: Jackson 全局日期/时间序列化格式？ → A: 统一使用 `yyyy-MM-dd HH:mm:ss`（如 `2026-08-01 14:30:00`），适用于 REST API JSON 响应和 PostgreSQL JSONB 列序列化。
+- Q: Jackson 全局日期/时间序列化格式？ → A: 统一使用 `yyyy-MM-dd HH:mm:ss`（如 `2026-07-23 14:30:00`），适用于 REST API JSON 响应和 PostgreSQL JSONB 列序列化。
 - Q: 缓存 Key 命名约定？ → A: 统一使用 `<bc-name>:<entity>:<id>` 格式（如 `user-bc:user:42`、`agent-bc:mcp:config`），确保多 BC 共享 CacheManager 时 Key 不碰撞。
 - Q: OpenAPI 文档分组机制？ → A: BC 在 Controller 类上标注 `@Tag(name = "<bc-name>")`，SpringDoc 自动按 Tag 分组显示 Swagger UI。
 - Q: Flyway 迁移脚本目录与命名规范？ → A: 扁平目录（不按 BC 子目录隔离），存放于 `metaforge-boot/src/main/resources/db/migration/`。每个 BC 提供两个脚本文件：`V<n>__<bc-name>_ddl.sql`（DDL 建表）和 `V<n+1>__<bc-name>_init.sql`（初始化数据），按 BC 名称前缀区分。多 BC 共享同一数据库，Flyway 按版本号全局顺序执行。

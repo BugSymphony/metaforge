@@ -1,6 +1,6 @@
 # Implementation Plan: 元模型治理核心能力 MVP
 
-**Branch**: (none — 由 before_specify hook 创建) | **Date**: 2026-08-01 | **Spec**: [spec.md](./spec.md)
+**Branch**: (none — 由 before_specify hook 创建) | **Date**: 2026-07-25 | **Spec**: [spec.md](./spec.md)
 
 **Input**: Feature specification from `specs/001-metamodel-mvp/spec.md`
 
@@ -57,7 +57,7 @@
 
 **Gate Verdict**: ALL 20 principles (11 global + 9 BC-specific) **PASS**. No violations.
 
-**Post-Design Re-check (2026-08-01)**: 全部原则仍为 PASS。新增的 name 字段（独立显示名）、embedding 字段（MVP 占位）、description 重命名、FqnGenerator 接口+实现分离模式、api 模块 `constants/` 常量集中管理、FQN 全链路强制使用生成器规则、FR-QRY-01~05 多维度过滤查询均未引入任何违规。
+**Post-Design Re-check (2026-07-31)**: 全部原则仍为 PASS。新增的 name 字段（独立显示名）、embedding 字段（MVP 占位）、description 重命名、FqnGenerator 接口+实现分离模式、api 模块 `constants/` 常量集中管理、FQN 全链路强制使用生成器规则、FR-QRY-01~05 多维度过滤查询均未引入任何违规。
 
 ## Foundation Check
 

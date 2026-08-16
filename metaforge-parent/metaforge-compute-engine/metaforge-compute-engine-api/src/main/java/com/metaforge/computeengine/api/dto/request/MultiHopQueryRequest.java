@@ -16,13 +16,13 @@ import java.util.List;
  * 多跳语义推理请求。
  *
  * @param sourceFqn      起点实体 FQN
- * @param hopSteps       跃步序列（上限 3 步）
+ * @param hopSteps       跃步序列（上限 5 步，对齐 compute-engine traversal.max-depth）
  * @param filterCriteria 过滤条件
  * @author metaforge
  */
 public record MultiHopQueryRequest(
         @NotBlank String sourceFqn,
-        @NotEmpty @Size(max = 3) List<@Valid HopStep> hopSteps,
+        @NotEmpty @Size(max = 5) List<@Valid HopStep> hopSteps,
         FilterCriteria filterCriteria
 ) implements Serializable {
 

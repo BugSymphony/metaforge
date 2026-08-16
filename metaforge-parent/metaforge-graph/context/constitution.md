@@ -3,9 +3,9 @@
   Sync Impact Report
 ================================================================================
   Version Change: N/A (initial template) → 1.0.0
-  Ratification Date: 2026-08-01
+  Ratification Date: 2026-07-29
 
-  Parent Global Constitution: v1.0.0 (2026-08-01)
+  Parent Global Constitution: v1.0.0 (2026-07-19)
 
   Principle Summary:
     ✅ Added (BC-Specific): I. 关系实例一等公民原则 (MUST)
@@ -259,5 +259,5 @@ INSERT 操作，数据库层面通过权限配置禁止 UPDATE 与 DELETE。归�
 
 ---
 
-**BC Constitution Version**: 1.0.0 | **Created**: 2026-08-01 | **Last Amended**: 2026-08-01
+**BC Constitution Version**: 1.0.0 | **Created**: 2026-07-29 | **Last Amended**: 2026-07-29
 <!-- BC 宪法具有独立的语义化版本，与全局宪法版本解耦。 -->

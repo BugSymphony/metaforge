@@ -1,7 +1,7 @@
 # Specification Quality Checklist: foundation-core 基座初始化
 
 **Purpose**: Validate specification completeness and quality before proceeding to planning
-**Created**: 2026-08-01
+**Created**: 2026-07-19
 **Feature**: [spec.md](../spec.md)
 
 ## Content Quality

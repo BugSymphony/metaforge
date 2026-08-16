@@ -1,31 +1,20 @@
 package com.metaforge.agent.cognition.core.interfaces.mcp;
 
 import com.metaforge.agent.cognition.api.dto.request.CognitionRequest;
-import com.metaforge.agent.cognition.api.dto.response.GuidanceResult;
+import com.metaforge.agent.cognition.api.dto.request.Scope;
+import com.metaforge.agent.cognition.api.dto.response.CognitionResponse;
+import com.metaforge.agent.cognition.api.enums.AgentArchetype;
+import com.metaforge.agent.cognition.api.enums.CognitionDepth;
+import com.metaforge.agent.cognition.api.enums.OutputFormat;
 import com.metaforge.agent.cognition.api.service.CognitionQueryService;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.ai.tool.annotation.ToolParam;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
+import java.util.Map;
 
-/**
- * 元认知指导层 BC 的 MCP 工具集。
- *
- * <p>通过 Spring AI {@code @Tool} 注解将领域能力发布为 MCP Server 工具方法，
- * 供 {@code agent-consumption} BC 经 {@code spring-ai-starter-mcp-server-webmvc}
- * 自动注册到 MCP Server 并暴露给 Agent 消费端调用。
- *
- * <p><strong>工具集名称</strong>：{@code agent-cognition}<br>
- * <strong>适用场景</strong>：Agent 获取结构化元认知上下文，支持 6 种内置模板，14 个认知视角维度。
- */
 @Component
 public class CognitionMcpTools {
-
-    private static final Logger log = LoggerFactory.getLogger(CognitionMcpTools.class);
 
     private final CognitionQueryService cognitionQueryService;
 
@@ -33,35 +22,25 @@ public class CognitionMcpTools {
         this.cognitionQueryService = cognitionQueryService;
     }
 
-    @Tool(description = "执行元认知查询，基于模板驱动的多认知视角编排，返回结构化认知交付物。支持 6 种内置模板（task-brief/step-guide/bundle-catalog/navigate/cognition-guidance/sub-task-brief）和 14 个认知视角维度")
-    public GuidanceResult cognitionExecute(
-            @ToolParam(description = "模板 ID，取值：task-brief、step-guide、bundle-catalog、navigate、cognition-guidance、sub-task-brief") String templateId,
-            @ToolParam(description = "Bundle FQN 列表，如 [\"order:1.0.0\", \"refund:1.0.0\"]") List<String> bundleFqns,
-            @ToolParam(description = "实体 FQN（可选），传入则启用 ENTITY_LEVEL 实体级上下文模式") String entityFqn,
-            @ToolParam(description = "认知深度：L1（最多 3 视角）、L2（最多 7 视角，默认）、L3（全部 14 视角）") String cognitionDepth,
-            @ToolParam(description = "代理原型：execution（执行型）/ exploration（探索型）/ audit（审计型）/ orchestration（编排型），默认 execution") String agentArchetype,
-            @ToolParam(description = "Token 预算上限，默认 8000") Integer maxTokens,
-            @ToolParam(description = "输出格式：json（结构化 JSON）或 prompt（Markdown，可直接注入 LLM 上下文），默认 json") String format) {
+    @Tool(name = "cognition_execute", description = "执行认知查询：按模板ID编排认知算子，产出结构化认知简报。结果可直接注入LLM上下文——低理解成本、自包含、带完整来源标注。模板ID可选: DISCOVER(元模型发现), ORIENT(业务域定位), BRIEF(实体全景), GUIDE(执行指南), FORECAST(影响链路), DELEGATE(子任务委派)。")
+    public CognitionResponse executeCognition(
+            @ToolParam(description = "模板ID (DISCOVER/ORIENT/BRIEF/GUIDE/FORECAST/DELEGATE)") String templateId,
+            @ToolParam(description = "认知边界五字段。scope中bundles白名单即授权依据") Scope scope,
+            @ToolParam(description = "模板专用参数，见各模板inputSchema") Map<String, Object> params,
+            @ToolParam(description = "输出格式 (json/prompt)，默认json") String format,
+            @ToolParam(description = "认知深度 (L1概览/L2标准/L3全量)，默认L2") String cognitionDepth,
+            @ToolParam(description = "Agent原型 (execution/exploration/audit/orchestration)") String agentArchetype,
+            @ToolParam(description = "最大Token预算，默认8000；<500自动降L1") Integer maxTokens) {
 
-        log.info("MCP 认知查询: templateId={}, bundleFqns={}, entityFqn={}, depth={}, archetype={}",
-                templateId, bundleFqns, entityFqn, cognitionDepth, agentArchetype);
+        OutputFormat outputFormat = format != null && !format.isBlank()
+                ? OutputFormat.valueOf(format.trim().toUpperCase(java.util.Locale.ROOT)) : null;
+        CognitionDepth depth = cognitionDepth != null && !cognitionDepth.isBlank()
+                ? CognitionDepth.valueOf(cognitionDepth.trim().toUpperCase(java.util.Locale.ROOT)) : null;
+        AgentArchetype archetype = agentArchetype != null && !agentArchetype.isBlank()
+                ? AgentArchetype.valueOf(agentArchetype.trim().toUpperCase(java.util.Locale.ROOT)) : null;
 
-        CognitionRequest request = new CognitionRequest(
-                bundleFqns,
-                null,
-                entityFqn,
-                null,
-                null,
-                null,
-                cognitionDepth != null ? cognitionDepth : "L2",
-                agentArchetype != null ? agentArchetype : "execution",
-                maxTokens != null ? maxTokens : 8000,
-                null,
-                format != null ? format : "json",
-                null,
-                null,
-                null);
-
+        CognitionRequest request = new CognitionRequest(scope, params,
+                outputFormat != null ? outputFormat.name() : null, depth, archetype, maxTokens);
         return cognitionQueryService.execute(templateId, request);
     }
 }

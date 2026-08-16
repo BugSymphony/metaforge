@@ -1,7 +1,7 @@
 # Quickstart Validation Guide: 语义查询与推理引擎
 
 **Feature**: 001-semantic-query-reasoning
-**Date**: 2026-08-01
+**Date**: 2026-08-02
 
 ---
 

@@ -2,7 +2,7 @@
 
 **Feature Branch**: `001-metadata-full-lifecycle`
 
-**Created**: 2026-08-01
+**Created**: 2026-07-28
 
 **Status**: Draft
 

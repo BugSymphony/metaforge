@@ -2,20 +2,17 @@ package com.metaforge.agent.cognition.api.enums;
 
 public enum CognitionDepth {
 
-    L1(3),
-    L2(7),
-    L3(14);
+    L1(0.33),
+    L2(0.67),
+    L3(1.0);
 
-    private final int maxPerspectives;
+    private final double trimRatio;
 
-    CognitionDepth(int maxPerspectives) {
-        this.maxPerspectives = maxPerspectives;
+    CognitionDepth(double trimRatio) {
+        this.trimRatio = trimRatio;
     }
 
-    public int maxPerspectives() { return maxPerspectives; }
-
-    public static CognitionDepth fromString(String value) {
-        if (value == null) return L2;
-        try { return valueOf(value.toUpperCase()); } catch (IllegalArgumentException e) { return L2; }
+    public double getTrimRatio() {
+        return trimRatio;
     }
 }

@@ -9,7 +9,6 @@ spring:
     import:
       - classpath:application-metaforge-compute-engine.yml
       - classpath:application-metaforge-graph.yml
-      - classpath:application-metaforge-agent-cognition.yml
   # 数据源配置
   datasource:
     url: jdbc:postgresql://localhost:5432/metaforge
@@ -61,6 +60,7 @@ management:
   endpoint:
     health:
       show-details: when-authorized
+      show-components: always
     env:
       show-values: always
 

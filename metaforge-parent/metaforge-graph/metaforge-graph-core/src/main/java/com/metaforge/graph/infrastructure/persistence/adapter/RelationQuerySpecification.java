@@ -20,6 +20,7 @@ public final class RelationQuerySpecification {
             List<String> sourceEntityFqns,
             List<String> targetEntityFqns,
             List<String> relationSchemaFqns,
+            String relationSchemaFqnPrefix,
             String nameKeyword,
             String descriptionKeyword) {
 
@@ -45,6 +46,9 @@ public final class RelationQuerySpecification {
             }
             if (relationSchemaFqns != null && !relationSchemaFqns.isEmpty()) {
                 predicates.add(root.get("relationSchemaFqn").in(relationSchemaFqns));
+            }
+            if (relationSchemaFqnPrefix != null && !relationSchemaFqnPrefix.isEmpty()) {
+                predicates.add(cb.like(root.get("relationSchemaFqn"), relationSchemaFqnPrefix + "%"));
             }
             if (nameKeyword != null && !nameKeyword.isEmpty()) {
                 predicates.add(cb.like(cb.lower(root.get("name")), "%" + nameKeyword.toLowerCase() + "%"));

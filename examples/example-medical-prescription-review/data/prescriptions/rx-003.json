@@ -1,0 +1,8 @@
+{
+  "rx_id": "RX-003",
+  "patient": "王患者",
+  "drug": "acetaminophen",
+  "single_dose_mg": 500,
+  "concurrent_drugs": [],
+  "prescribed_at": "2026-08-15T11:00:00Z"
+}

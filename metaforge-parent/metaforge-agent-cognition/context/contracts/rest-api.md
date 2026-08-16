@@ -1,224 +1,235 @@
 ---
-id: rest-api
+id: agent-cognition.rest-api
 protocol: REST
-version: 1.1.0
+version: 1.0.0
 owner: metaforge-agent-cognition
-description: Execute a cognitive query using the specified template.
+description: 认知引擎 REST API 接口契约。提供统一模板驱动的认知查询 HTTP 端点。
 type: business
 ---
 
-# REST API Contract
+# REST API Contract: metaforge-agent-cognition
+
+**Protocol**: RESTful HTTP/1.1 + JSON
+**Base URL**: `/api/v1`
+**Version**: 1.0.0
+
+> 所有 REST 端点复用 foundation-core 的 `ApiResponse<T>` 统一响应格式（code/message/data/traceId）。
+> 响应体在成功时被 foundation 全局切面自动包装为 `ApiResponse.data`。
+
+---
 
 ## Overview
 
-```
-/api/v1/cognition
-```
+按模板 ID 执行一次认知查询，编排认知算子、裁剪结果、格式化输出。该端点是整个认知引擎的唯一对外入口，所有消费方通过该端点获取认知能力。
+
+---
 
 ## Endpoints
 
+| Method | Path | Description |
+|--------|------|-------------|
+| POST | `/api/v1/cognition/{templateId}` | 统一认知查询执行入口 |
+
+---
+
+## Request Parameters
+
 ### POST /api/v1/cognition/{templateId}
 
-Execute a cognitive query using the specified template.
+**描述**: 按模板 ID 执行一次认知查询，编排认知算子、裁剪结果、格式化输出。
 
-**Path Parameters**
+**路径参数**:
 
-| Parameter    | Type   | Required | Description              |
-|-------------|--------|----------|--------------------------|
-| templateId  | string | Y        | Template identifier       |
+| 参数 | 类型 | 必填 | 描述 |
+|------|------|------|------|
+| templateId | string | 是 | 模板唯一标识（DISCOVER/ORIENT/BRIEF/GUIDE/FORECAST/DELEGATE） |
 
-**Request Body**
-
-Content-Type: `application/json`
+### Request Body
 
 ```json
 {
-  "bundle_fqns": ["order:1.0.0", "refund:1.0.0"],
-  "entity_fqn": "order:1.0.0.Step_CheckInventory",
-  "entity_types": ["order:1.0.0.ExecutionRule"],
-  "subject_domain_fqn": "order:1.0.0.SubjectDomain_Order",
-  "scope_mode": "INHERITED",
+  "scope": {
+    "bundles": ["order:1.0.0"],
+    "packages": ["order:1.0.0.pkg_order"],
+    "domain_groups": [],
+    "domains": [],
+    "entity_schemas": []
+  },
+  "params": {
+    "parent_fqn": "",
+    "entity_fqn": "order:1.0.0.pkg_order.Order_001"
+  },
+  "format": "json",
   "cognition_depth": "L2",
   "agent_archetype": "execution",
-  "max_tokens": 8000,
-  "expand": "lazy",
-  "format": "json",
-  "context_parameters": {"source": "opencode-agent"},
-  "cursor": 0,
-  "page_size": 20
+  "max_tokens": 8000
 }
 ```
 
-**Request Field Descriptions**
+**请求字段**:
 
-| Field                | Type            | Required | Default      | Description                                                                 |
-|----------------------|-----------------|----------|--------------|-----------------------------------------------------------------------------|
-| bundle_fqns          | string[]        | Y        | —            | Bundle FQN 列表                                                               |
-| entity_fqn           | string          | N        | —            | 实体 FQN，ENTITY_LEVEL 模式时必填                                                  |
-| entity_types         | string[]        | N        | —            | 实体类型过滤列表                                                                   |
-| subject_domain_fqn   | string          | N        | —            | 主体域 FQN                                                                     |
-| scope_mode           | string          | N        | "INHERITED"  | 作用域模式：ENTITY_LEVEL / PACKAGE / BUNDLE / INHERITED                           |
-| cognition_depth      | string          | N        | "L2"         | 认知深度：L1 / L2 / L3                                                           |
-| agent_archetype      | string          | N        | "execution"  | 代理原型：execution / exploration / audit / orchestration                         |
-| max_tokens           | number          | N        | 8000         | 最大 Token 数                                                                   |
-| expand               | string          | N        | "lazy"       | 展开模式：eager / lazy                                                            |
-| format               | string          | N        | "json"       | 输出格式：json / prompt                                                           |
-| context_parameters   | object          | N        | {}           | 上下文参数，透传键值对                                                                 |
-| cursor               | number          | N        | 0            | 分页游标                                                                        |
-| page_size             | number          | N        | 20           | 分页大小                                                                        |
+| 字段 | 类型 | 必填 | 默认值 | 描述 |
+|------|------|------|--------|------|
+| scope | object | 条件 | null | 认知边界五字段。scopeRequired=true 时必填 |
+| scope.bundles | string[] | 否 | — | Bundle FQN 白名单 |
+| scope.packages | string[] | 否 | — | Package FQN 白名单 |
+| scope.domain_groups | string[] | 否 | — | 域组 FQN 白名单 |
+| scope.domains | string[] | 否 | — | 域 FQN 白名单 |
+| scope.entity_schemas | string[] | 否 | — | EntitySchema FQN 白名单 |
+| params | object | 否 | `{}` | 模板专用参数，由模板 inputSchema 定义 |
+| format | string | 否 | `"json"` | 输出格式：`"json"` 或 `"prompt"` |
+| cognition_depth | string | 否 | `"L2"` | 认知深度：`"L1"`/`"L2"`/`"L3"` |
+| agent_archetype | string | 否 | `"execution"` | Agent 原型：`"execution"`/`"exploration"`/`"audit"`/`"orchestration"` |
+| max_tokens | integer | 否 | 8000 | 最大 Token 预算；`< 500` 自动降为 L1 |
 
-## Cognitive Perspectives
-
-The unified query engine supports **14 built-in cognitive perspectives**. Each perspective is a self-contained cognitive query unit that queries upstream BCs and returns a structured section. The `perspectives` parameter in the request body can be used to select which perspectives to execute (empty = engine decides by template); the `cognition_depth` and `agent_archetype` parameters control how many perspectives are activated and their priority order.
-
-Perspective scope semantics:
-- **BUNDLE**: perspective only applies in `BUNDLE_LEVEL` context (queried against a whole Bundle)
-- **ENTITY**: perspective only applies in `ENTITY_LEVEL` context (filtered by `entity_fqn`)
-- **BOTH**: applies in both contexts (in ENTITY_LEVEL mode, filtered by `entity_fqn` graph edges)
-
-| Perspective ID | Scope | 功能 | 用途 |
-|----------------|-------|------|------|
-| `entity_profile` | BOTH | 通过 FQN 精准查询获取实体的完整 M1 实例内容，并通过元模型获取所属 EntitySchema 的结构定义用于字段语义解释 | 获取指定实体的完整画像（全属性、Schema 结构说明、历史版本信息），是实体级认知的基础视角 |
-| `domain_location` | ENTITY | 从 `entity_fqn` 出发沿 COMPOSITION 入边反向追溯该实体在 L1-L5 业务知识树中的完整归属路径 | 明确某实体在业务领域层级中的具体位置，未接入分类树时返回空路径标注 |
-| `composition_tree` | ENTITY | 递归展开指定实体的 COMPOSITION 树（FORWARD 子树 / BACKWARD 父链 / BOTH 双向） | 查看实体"由什么组成"或"被谁包含"的完整组成结构 |
-| `relationship_graph` | ENTITY | 以 `entity_fqn` 为中心展开关系邻域（默认 1-3 度），结果按 AssociationType 分组 | 查看实体关联的语义关系网络，每组列出关联远端实体及关系语义说明 |
-| `constraint_set` | ENTITY | 以 `entity_fqn` 为端点沿 DEPENDENCY_INFLUENCE 入边和 ASSOCIATION_REFERENCE 边查询约束实体，并提取 EntitySchema 的 JSON Schema 硬边界（必填字段、枚举值、取值范围） | 获取执行某实体时必须满足的约束与边界规则，按 constraint_level（MANDATORY/RECOMMENDED/REFERENCE）分级 |
-| `capability_catalog` | ENTITY | 以 `entity_fqn` 为端点获取能力实体 FQN 列表、能力实体详情，并自动展开 protocol 子类型详情 | 了解该实体对外暴露的操作能力清单（可调用 API/能力） |
-| `flow_blueprint` | BUNDLE | 将 PROCESS_SEQUENCE 关系拓扑构建为有序步骤序列，含 branch_points、entry_step、exit_steps | 查看整个 Bundle 的流程蓝图（步骤序列），用于流程级认知 |
-| `decision_matrix` | BOTH | 查询 `entity_fqn` 的 PROCESS_SEQUENCE 出边（出边数 >1 为决策点），评估每个选项的下游影响 | 识别流程中的决策分支点，评估各分支影响，辅助决策判断 |
-| `impact_trace` | ENTITY | 以 `entity_fqn` 为起点执行正向影响扩散（深度 3）、反向依赖溯源、影响路径详情 | 评估变更某个实体的影响范围与依赖关系，供变更影响分析使用 |
-| `prerequisite_chain` | ENTITY | 从 `entity_fqn` 出发沿 DEPENDENCY_INFLUENCE 入边反向追溯前置依赖链，按层级展开依赖树 | 获取执行某实体前必须满足的前置依赖条件链 |
-| `domain_navigation` | BUNDLE | 沿 L1 SubjectDomainGroup → L2 SubjectDomain → Task 逐层下钻，默认懒加载（返回当前层子节点概要 + has_more），expand=all 时全量展开 | 渐进式浏览平台的领域结构，首屏导航入口 |
-| `instance_catalog` | BOTH | 按 entityTypes 过滤交付指定 Bundle 的 M1 实例及其关系清单（ENTITY 模式按 entity_fqn 做关系边过滤） | 查看指定 Bundle 下满足条件的实例列表，供枚举与筛选 |
-| `bundle_directory` | BUNDLE | 交付平台已发布 Bundle 实例列表及其已填充的主题域树（L1→L2→Task） | 查看平台当前所有已发布 Bundle 及其主题域目录总览 |
-| `schema_inventory` | BUNDLE | 枚举指定 Bundle 下已发布的所有 EntitySchema FQN 和名称，以及每类 Schema 的 M1 实例数量统计（无实例时保留条目并标注 count=0） | 查看 Bundle 的元模型结构清单与各结构实例规模 |
-
-## Built-in Templates
-
-The endpoint routes via `templateId` to a pre-configured template in `cognition-templates.yml`. Each template declares a fixed perspective combination, depth trim level, and agent archetype adaptation. Templates are declarative — new business scenarios only require declaring a new template config, no code changes.
-
-| Template ID | 功能 | 用途 | 视角组合 | 深度裁剪 | 代理原型 |
-|-------------|------|------|----------|----------|----------|
-| `bundle-catalog` | Bundle 目录与版本概览 | 消费端首屏接入——查看平台已发布的 Bundle 列表并进入主题域导航 | `bundle_directory` + `domain_navigation` | L1 | exploration |
-| `cognition-guidance` | 完整认知引导（14 个视角全量） | 深度认知查询引擎——接受 `perspectives` 参数按需动态组合任意视角集合，跨 Bundle 通用 | 全部 14 个视角（可裁剪） | L1/L2/L3 | 可配置 |
-| `task-brief` | 一站式任务摘要 | 代理执行任务前获取完整的执行上下文简报（10 视角覆盖实体、关系、约束、能力、流程、决策、影响） | `entity_profile`、`domain_location`、`composition_tree`、`relationship_graph`、`constraint_set`、`capability_catalog`、`flow_blueprint`、`decision_matrix`、`impact_trace`、`prerequisite_chain` | L2 | execution |
-| `step-guide` | 实体即时指导 | 对指定实体（entity_fqn）做实体级过滤的即时操作指导，附加 FQN 归属校验和 adjacent_context 局部导航 | `entity_profile`、`constraint_set`、`capability_catalog`、`decision_matrix`、`impact_trace`、`relationship_graph` | L2 | execution |
-| `navigate` | 渐进式领域导航 | 按需逐层下钻浏览领域结构（支持 anchor_fqn、level、cursor、page_size、expand 参数），懒加载控制单次数据量 | `domain_navigation` | L1 | exploration |
-
-Template routing rules:
-- Passing an unregistered `templateId` returns error code `34001 TEMPLATE_NOT_FOUND`.
-- `task-brief` and `step-guide` are stateless and idempotent — repeated identical calls return identical results (except query timestamps).
-- The template depth trim is overridable per request via the `cognition_depth` request parameter.
+---
 
 ## Response Schema
 
-### JSON Format (`format: "json"`)
+### Response (Success — format: "json")
 
-**200 OK**
+**HTTP Status**: 200 OK
 
 ```json
 {
-  "context_meta": {
-    "template_id": "cognition-guidance",
-    "context_mode": "ENTITY_LEVEL",
-    "data_version_anchors": {
-      "order": {"version": "1.0.0", "queriedAt": "2026-08-01T10:30:00Z"}
+  "code": 200,
+  "message": "success",
+  "data": {
+    "template": "DISCOVER",
+    "context_meta": {
+      "template": "DISCOVER",
+      "version_anchors": {
+        "order": "order:1.0.0",
+        "payment": "payment:1.2.0"
+      },
+      "scope_applied": {
+        "bundles": ["order:1.0.0"],
+        "packages": null,
+        "domain_groups": null,
+        "domains": null,
+        "entity_schemas": null
+      },
+      "token_estimate": 1200,
+      "generated_at": "2026-08-11T10:30:00Z",
+      "skipped_entities": [],
+      "truncated_perspectives": ["procedural"]
     },
-    "truncated_perspectives": [
-      {"perspective_id": "impact_trace", "truncated": true, "reason": "TIMEOUT"}
-    ],
-    "skipped_perspectives": [
-      {"perspective_id": "domain_navigation", "reason": "BUNDLE scope skipped in ENTITY_LEVEL"}
-    ]
+    "dimensions": {
+      "ontological": {
+        "bundle_discovery": { "bundles": [...] },
+        "package_explorer": { "packages": [...] }
+      },
+      "structural": {
+        "decomposition": { "tree": {...} }
+      },
+      "relational": {
+        "direct_link": { "relations": [...] }
+      }
+    },
+    "format": "json",
+    "content": null
   },
-  "perspectives": {
-    "entity_profile": {
-      "perspective_id": "entity_profile",
-      "status": "OK",
-      "data": { ... },
-      "truncated": false,
-      "truncated_reason": null,
-      "error_message": null
-    },
-    "constraint_set": {
-      "perspective_id": "constraint_set",
-      "status": "OK",
-      "data": { ... },
-      "truncated": false,
-      "truncated_reason": null,
-      "error_message": null
-    },
-    "capability_catalog": {
-      "perspective_id": "capability_catalog",
-      "status": "OK",
-      "data": { ... },
-      "truncated": false,
-      "truncated_reason": null,
-      "error_message": null
-    }
-  }
+  "traceId": "a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6"
 }
 ```
 
-### Prompt Format (`format: "prompt"`)
+### Response (Success — format: "prompt")
 
-**200 OK** — Content-Type: `text/markdown`
+**HTTP Status**: 200 OK
 
-The prompt format renders the same semantic content as a Markdown document suitable for direct LLM injection.  Each perspective is rendered as a Markdown section with its data structured for readability by LLM contexts.
-
-Example:
-
-```markdown
-# Cognition Guidance Report
-**Template**: cognition-guidance
-**Mode**: ENTITY_LEVEL
-
-## Data Version Anchors
-- `order`: 1.0.0 (queried 2026-08-01T10:30:00Z)
-
-## Entity Profile
-...
-
-## Constraint Set
-...
-
-## Capability Catalog
-...
+```json
+{
+  "code": 200,
+  "message": "success",
+  "data": {
+    "template": "BRIEF",
+    "context_meta": {
+      "template": "BRIEF",
+      "version_anchors": { "order": "order:1.0.0" },
+      "scope_applied": { "bundles": ["order:1.0.0"], ... },
+      "token_estimate": 450,
+      "generated_at": "2026-08-11T10:30:00Z",
+      "skipped_entities": [],
+      "truncated_perspectives": []
+    },
+    "dimensions": null,
+    "format": "prompt",
+    "content": "# BRIEF 认知简报\n\n## 上下文元信息\n\n- **模板**: BRIEF\n- **数据版本**: order@1.0.0\n- **生成时间**: 2026-08-11T10:30:00Z\n- **Token 估算**: 450\n\n## 本体论\n...\n"
+  },
+  "traceId": "a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6"
+}
 ```
+
+### Response (Error)
+
+**HTTP Status**: 4xx/5xx
+
+```json
+{
+  "code": 34001,
+  "message": "模板 'UNKNOWN' 未注册",
+  "data": null,
+  "traceId": "a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6"
+}
+```
+
+---
 
 ## Error Codes
 
-### Error Response
+| 错误码 | HTTP Status | 场景 |
+|--------|------------|------|
+| 34001 | 404 | templateId 未注册 |
+| 34002 | 422 | 模板配置校验失败 |
+| 34003 | 400 | scope 中 bundle/package FQN 无效 |
+| 34004 | 403 | 实体超出 scope 边界 |
+| 34005 | 400 | scopeRequired 模板缺少 scope |
+| 34006 | 422 | 模板引用未注册的算子 |
+| 34007 | 422 | 算子引用无法解析 |
+| 34008 | 504 | required 算子执行超时 |
+| 34009 | 500 | required 算子执行失败 |
+| 34010 | 400 | format 参数无效 |
+| 34011 | 502 | 上游 BC 不可用 |
+| 34012 | 400 | archetype 无算子配置 |
 
-Uses foundation-core `ApiResponse` format.
+---
 
-```json
-{
-  "code": 34004,
-  "message": "实体FQN不属于任何已发布Bundle",
-  "data": {
-    "candidates": ["order:1.0.0.Step_CheckInventory"]
-  },
-  "traceId": "a1b2c3d4e5f6"
-}
+## OpenAPI 标签
+
+所有端点统一使用 Swagger 分组标签：
+
+```java
+@Tag(name = "agent-cognition")
 ```
 
-### HTTP Status Codes
+禁止自定义 `springdoc.*` 配置或 `OpenAPI` bean。
 
-| HTTP Status | Error Code            | Condition                                  |
-|-------------|-----------------------|--------------------------------------------|
-| 404         | 34001                 | templateId not registered                   |
-| 400         | 34002                 | bundleFqn format invalid                    |
-| 400         | 34003                 | bundleFqns list empty                       |
-| 400         | 34004                 | entityFqn prefix not in any Bundle          |
-| 500         | 34005                 | Single perspective timed out (200ms)        |
-| 502         | 34006                 | Upstream BC unavailable                     |
+---
 
-## Headers
+## 调用示例
 
-| Header              | Value                  | Description                       |
-|---------------------|------------------------|-----------------------------------|
-| Content-Type        | application/json       | Request body media type            |
-| Accept              | application/json       | Response media type (JSON)         |
-| Accept              | text/markdown          | Response media type (prompt)       |
-| X-Trace-Id          | string                 | Distributed tracing ID             |
+```bash
+# JSON 格式 DISCOVER 查询
+curl -X POST http://localhost:8080/api/v1/cognition/DISCOVER \
+  -H "Content-Type: application/json" \
+  -H "Accept-Language: zh-CN" \
+  -d '{
+    "scope": { "bundles": ["order:1.0.0"] },
+    "params": { "parent_fqn": "" },
+    "format": "json",
+    "cognition_depth": "L2",
+    "agent_archetype": "execution",
+    "max_tokens": 8000
+  }'
+
+# Prompt 格式 BRIEF 查询
+curl -X POST http://localhost:8080/api/v1/cognition/BRIEF \
+  -H "Content-Type: application/json" \
+  -d '{
+    "scope": { "bundles": ["order:1.0.0"] },
+    "params": { "entity_fqn": "order:1.0.0.pkg_order.Order_001" },
+    "format": "prompt",
+    "cognition_depth": "L3",
+    "agent_archetype": "execution"
+  }'
+```

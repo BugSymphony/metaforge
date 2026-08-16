@@ -1,0 +1,81 @@
+templateId: DISCOVER
+templateName: "元模型发现"
+description: "探索平台元模型结构——发现 Bundle、Package、EntitySchema、RelationSchema。通过 operators 参数选择要展开的一层，渐进式下钻建立对平台语义组织的全局认知"
+version: "1.0.0"
+stage: P0
+enabled: true
+
+config:
+  global:
+    bundleVersionFqn: metaforge:1.0.0
+  operators:
+    ontological.bundle-discovery: {}
+    ontological.package-explorer: {}
+    ontological.entity-schema-inventory: {}
+    ontological.relation-schema-inventory: {}
+
+operators:
+  - operatorId: ontological.bundle-discovery
+    name: "Bundle 发现"
+    priority: 100
+    required: true
+    archetypes: [execution, exploration, audit, orchestration]
+    description: "列出平台已发布的 Bundle 列表，支持 scope.bundles 过滤"
+  - operatorId: ontological.package-explorer
+    name: "Package 探索"
+    priority: 90
+    required: false
+    archetypes: [execution, exploration]
+    description: "按层级探索 Package 命名空间树（需 parent_fqn 锚点，默认不强制）"
+  - operatorId: ontological.entity-schema-inventory
+    name: "实体类型盘点"
+    priority: 80
+    required: false
+    archetypes: [execution, exploration]
+    description: "盘点 EntitySchema 类型清单，含实例数量和关键属性（需 parent_fqn 锚点，默认不强制）"
+  - operatorId: ontological.relation-schema-inventory
+    name: "关系类型盘点"
+    priority: 70
+    required: false
+    archetypes: [execution, exploration]
+    description: "盘点 RelationSchema 类型清单"
+
+inputSchema:
+  type: object
+  properties:
+    selectOperators:
+      type: array
+      default: []
+      items:
+        type: string
+        description: "算子 ID（必须为模板已声明的 operatorId）"
+      description: "运行时选择要执行的算子子集。空/缺省=执行模板声明的全部算子。如 [ontological.bundle-discovery] 仅展开 Bundle 层"
+    parent_fqn:
+      type: string
+      description: "要展开的父节点 FQN（锚点）。null=返回全平台 Bundle 列表"
+    cursor:
+      type: integer
+      description: "分页页码（1-based），用于分页遍历"
+      default: 0
+    page_size:
+      type: integer
+      description: "每页返回数量"
+      default: 20
+      minimum: 1
+      maximum: 100
+
+scopeBehavior:
+  acceptsScope: true
+  scopeRequired: false
+  producesUpdatedScope: false
+  scopeFields: [bundles, packages, entity_schemas]
+  description: "接受可选 scope 限定发现范围；不产出更新的 scope"
+
+outputSchema:
+  type: DISCOVER_RESULT
+  formats: [json, prompt]
+
+contextMeta:
+  includeVersionAnchors: true
+  includeScopeApplied: true
+  includeTokenEstimate: true

@@ -1,0 +1,7 @@
+{
+  "rack_id": "Rack-01",
+  "temperature": 24,
+  "humidity": 45,
+  "power_load": 8.2,
+  "sampled_at": "2026-08-15T09:00:00Z"
+}

@@ -15,6 +15,7 @@ public class RelationQueryRequest {
     private List<String> sourceEntityFqns;
     private List<String> targetEntityFqns;
     private List<String> relationSchemaFqns;
+    private String relationSchemaFqnPrefix;
     private String nameKeyword;
     private String descriptionKeyword;
     private LocalDateTime createdAtStart;
@@ -42,6 +43,9 @@ public class RelationQueryRequest {
 
     public List<String> getRelationSchemaFqns() { return relationSchemaFqns; }
     public void setRelationSchemaFqns(List<String> relationSchemaFqns) { this.relationSchemaFqns = relationSchemaFqns; }
+
+    public String getRelationSchemaFqnPrefix() { return relationSchemaFqnPrefix; }
+    public void setRelationSchemaFqnPrefix(String relationSchemaFqnPrefix) { this.relationSchemaFqnPrefix = relationSchemaFqnPrefix; }
 
     public String getNameKeyword() { return nameKeyword; }
     public void setNameKeyword(String nameKeyword) { this.nameKeyword = nameKeyword; }

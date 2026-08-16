@@ -113,12 +113,12 @@ components:
           type: string
           format: date-time
           description: 创建时间 (yyyy-MM-dd HH:mm:ss)
-          example: "2026-08-01 14:30:00"
+          example: "2026-07-23 14:30:00"
         updatedTime:
           type: string
           format: date-time
           description: 更新时间 (yyyy-MM-dd HH:mm:ss)
-          example: "2026-08-01 14:30:00"
+          example: "2026-07-23 14:30:00"
 
     ErrorDetail:
       type: object

@@ -1,7 +1,7 @@
 # Specification Quality Checklist: 语义关系实例全生命周期管理
 
 **Purpose**: Validate specification completeness and quality before proceeding to planning
-**Created**: 2026-08-01
+**Created**: 2026-07-29
 **Feature**: [spec.md](../spec.md)
 
 ## Content Quality

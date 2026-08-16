@@ -4,7 +4,7 @@
 ================================================================================
   BC Constitution Version Change: 0.0.0 (placeholder) → 1.0.0
   Parent Global Constitution Version: 1.0.0
-  Ratification Date: 2026-08-01
+  Ratification Date: 2026-07-19
 
   Principle Summary:
     ✅ Added: I. 纯技术属性铁则 (MUST)
@@ -221,5 +221,5 @@ VII Bundle 模块化治理、VIII Agent 友好型输出）虽不直接适用于 
 
 ---
 
-**BC Constitution Version**: 1.0.0 | **Created**: 2026-08-01 | **Last Amended**: 2026-08-01
+**BC Constitution Version**: 1.0.0 | **Created**: 2026-07-19 | **Last Amended**: 2026-07-19
 <!-- BC constitution has independent semantic versioning, decoupled from global constitution version. -->

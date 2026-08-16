@@ -14,12 +14,15 @@
     <artifactId>metaforge-agent-cognition</artifactId>
     <packaging>pom</packaging>
 
-    <name>BC: Agent Cognition Guidance</name>
-    <description>元认知指导层 BC——基于模板驱动的多认知视角编排引擎，提供面向 Agent 的结构化认知交付物</description>
+    <name>BC: Agent Cognition</name>
+    <description>认知基础架构层 BC——模板驱动的认知算子编排引擎，统一认知入口与输出组装</description>
 
     <modules>
         <module>metaforge-agent-cognition-api</module>
         <module>metaforge-agent-cognition-core</module>
+        <module>metaforge-agent-cognition-dimensions</module>
+        <module>metaforge-agent-cognition-templates</module>
+        <module>metaforge-agent-cognition-starter</module>
     </modules>
 
 </project>
