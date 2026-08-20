@@ -1,0 +1,42 @@
+{
+  "name": "metaforge-dsh",
+  "version": "0.1.0",
+  "description": "MetaForge 业务语义认知插件 —— 为 DeepSeek Harness Agent 提供语义说明书查询（metaforge_cognition / metaforge_resolve）",
+  "type": "module",
+  "main": "lib/index.js",
+  "types": "lib/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/types/index.d.ts",
+      "default": "./lib/index.js"
+    },
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib/index.js",
+    "lib/types/**/*.d.ts",
+    "cordis.patch.yml",
+    "README.md"
+  ],
+  "license": "Apache-2.0",
+  "keywords": ["dsh", "deepseek-harness", "metaforge", "cognition", "semantic"],
+  "scripts": {
+    "setup": "bash setup.sh",
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "^4.0.1",
+    "@deepseek-ai/dsh-tools": "^0.1.0-rc.7",
+    "@deepseek-ai/schemastery": "^3.18.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.0"
+  }
+}

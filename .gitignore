@@ -36,3 +36,5 @@ specs.zip
 !.specify/memory/
 !.specify/memory/**
 !.specify/context.json
+
+integrations/dsh/lib/

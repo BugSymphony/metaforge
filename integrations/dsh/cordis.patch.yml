@@ -1,0 +1,9 @@
+- insert:
+    - id: metaforge
+      name: metaforge-dsh
+      config:
+        serverUrl: http://localhost:8080
+        timeoutMs: 15000
+        defaultBundles: [metaforge:1.0.0]
+        defaultDepth: L3
+        defaultArchetype: EXECUTION

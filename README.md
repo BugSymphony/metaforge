@@ -33,6 +33,7 @@ RAG 给碎片化文本、向量库给相似片段、规则引擎把规则焊死�
 | **自建语义库** | 内置 agent 库开箱即用，更支持按业务自建 Bundle，多库并存按需消费 |
 | **确定性认知** | FQN 解析绝不臆造、决策每一步可溯源到说明书规则 |
 | **说明书指导执行** | 同一份说明书，对不同数据产生不同且正确的结论 |
+| **多 Agent 框架接入** | opencode 技能/工具/子代理 + DeepSeek Harness 插件，一套语义底座多框架消费 |
 
 ## 如何改变 AI Agent
 
@@ -87,6 +88,19 @@ curl -s -X POST http://localhost:8080/api/v1/cognition/BRIEF \
 opencode run "你是药剂审核 Agent，执行处方审核任务：查处方审核任务说明书，读 rx-002.json 对照规则报告处置。"
 ```
 
+### DeepSeek Harness Agent 消费
+
+为 DeepSeek Harness 提供插件（[`integrations/dsh`](./docs/integrations/dsh-plugin.md)），Agent 直接获得 `metaforge_cognition` / `metaforge_resolve` 工具：
+
+```
+dsh plugin --profile headless add /data/ext/source-8/metaforge/integrations/dsh
+dsh --profile headless "用 metaforge_cognition（BRIEF）查库存盘点任务说明书"
+```
+
+开发/编译/使用指南见 [dsh 插件文档](./docs/integrations/dsh-plugin.md)。
+
+一套语义底座，多 Agent 框架（opencode / DeepSeek Harness）均可消费。
+
 ## 示例场景
 
 | 示例 | 说明 |
@@ -104,6 +118,7 @@ opencode run "你是药剂审核 Agent，执行处方审核任务：查处方审
 - [架构](./docs/architecture.md)
 - [示例](./docs/examples/)
 - [接口契约](./docs/contracts/INDEX.md)（6 场景模板 + 公共约定的详细契约）
+- [DeepSeek Harness 插件](./docs/integrations/dsh-plugin.md)（开发/编译/使用指南）
 
 ## 开源协议
 
