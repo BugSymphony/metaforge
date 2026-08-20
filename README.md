@@ -93,7 +93,7 @@ opencode run "你是药剂审核 Agent，执行处方审核任务：查处方审
 为 DeepSeek Harness 提供插件（[`integrations/dsh`](./docs/integrations/dsh-plugin.md)），Agent 直接获得 `metaforge_cognition` / `metaforge_resolve` 工具：
 
 ```
-dsh plugin --profile headless add /data/ext/source-8/metaforge/integrations/dsh
+dsh plugin --profile headless add /绝对路径/metaforge/integrations/dsh
 dsh --profile headless "用 metaforge_cognition（BRIEF）查库存盘点任务说明书"
 ```
 

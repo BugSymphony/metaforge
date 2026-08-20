@@ -18,7 +18,7 @@ MetaForge 的 **DeepSeek Harness (dsh) 插件** —— 为 dsh Agent 提供"语�
 ### 1. 开发（改代码）
 
 ```sh
-cd /data/ext/source-8/metaforge/integrations/dsh
+cd /绝对路径/metaforge/integrations/dsh
 # 编辑 src/index.ts（metaforge_cognition / metaforge_resolve 两个工具 + Config）
 ```
 
@@ -43,7 +43,7 @@ npm run build       # 编译 → lib/index.js + lib/types
 
 ```sh
 # 安装插件到 headless profile（本地路径）
-dsh plugin --profile headless add /data/ext/source-8/metaforge/integrations/dsh
+dsh plugin --profile headless add /绝对路径/metaforge/integrations/dsh
 
 # 验证 bundle 层生效
 dsh --profile headless --dump-config | grep -A5 metaforge
@@ -74,7 +74,7 @@ dsh --profile headless "用 metaforge_resolve 解析「库存盘点」，再用 
 
 ```sh
 # 从本地路径安装到 headless profile
-dsh plugin --profile headless add /data/ext/source-8/metaforge/integrations/dsh
+dsh plugin --profile headless add /绝对路径/metaforge/integrations/dsh
 
 # 或发布到 Git 后安装
 # dsh plugin --profile headless add git+https://github.com/<owner>/metaforge-dsh
