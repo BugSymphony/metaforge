@@ -69,8 +69,10 @@ cd /data/ext/source-8/metaforge/test/cognition/scripts
 | `03-industrial.sql` | 工业设备预测性维护域（决策嵌套 + 两级阈值） |
 | `04-datacenter.sql` | 数据中心机柜巡检域（3 业务对象 + 决策嵌套） |
 | `05-supply-chain.sql` | 供应链库存补货域（3 业务对象 + 供应商择优） |
+| `06-java-diag.sql` | java-diag 独立 Bundle 元模型（九阶段诊断链路 EntitySchema/RelationSchema + 依赖声明） |
+| `07-java-diag-scenarios.sql` | java-diag 6 大场景实例链（CPU高/FullGC/OOM/内存泄漏/线程池耗尽/ClassLoader泄漏 + 域树 + 关系索引） |
 
-全部 seed 幂等（ON CONFLICT DO NOTHING），重复应用安全。
+全部 seed 幂等（ON CONFLICT DO NOTHING），重复应用安全。注意：`07` 依赖 `06`，且必须按序应用（`init-seed.sh` 已按文件名排序自动处理）；若跳过应用层激活直接插 `relation_instance`，末尾已含 `entity_relation_index` 双向索引同步（compute-engine 图遍历依赖）。
 
 ## 常用命令
 

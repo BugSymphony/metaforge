@@ -1,0 +1,19 @@
+{
+  "incident_id": "INC-CL-001",
+  "service": "admin-console",
+  "reported_at": "2026-08-27T14:25:00Z",
+  "symptom": "多次部署后 Metaspace 持续增长",
+  "metrics": {
+    "loaded_class_count": 182000,
+    "metaspace_used_mb": 1560,
+    "metaspace_max_mb": 2048,
+    "redeploy_count_48h": 14,
+    "classloader_leaked_estimate": "3 个旧 ClassLoader 仍被引用"
+  },
+  "class_histogram_sample": {
+    "tool": "jcmd",
+    "command": "jcmd 6552 GC.class_histogram",
+    "suspicious_loader": "org.example.plugin.PluginClassLoader@0x7f3a (version=13, still alive)",
+    "reference_chain": "PluginRegistry#handlers (static) -> PluginHandler -> PluginClassLoader"
+  }
+}

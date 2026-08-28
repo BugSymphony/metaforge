@@ -1,0 +1,31 @@
+{
+  "incident_id": "INC-FGC-001",
+  "service": "gateway-service",
+  "reported_at": "2026-08-27T10:05:00Z",
+  "symptom": "频繁 Full GC",
+  "metrics": {
+    "full_gc_count_per_hour": 48,
+    "full_gc_avg_pause_ms": 620,
+    "young_gc_count_per_hour": 210,
+    "heap_used_gb": 6.4,
+    "heap_max_gb": 8.0
+  },
+  "gc_log_sample": {
+    "tool": "jstat",
+    "command": "jstat -gcutil 5370 1000 5",
+    "latest_observation": {
+      "S0": 0.0,
+      "S1": 98.2,
+      "E": 99.5,
+      "O": 96.8,
+      "M": 61.3,
+      "FGC": 48,
+      "FGCT": 29.8
+    }
+  },
+  "heap_dump_hint": {
+    "tool": "jmap",
+    "command": "jmap -dump:live,format=b,file=gateway-heap.hprof 5370",
+    "expected": "大对象/缓存占据老年代"
+  }
+}

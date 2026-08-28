@@ -1,0 +1,22 @@
+{
+  "incident_id": "INC-POOL-001",
+  "service": "pay-service",
+  "reported_at": "2026-08-27T13:40:00Z",
+  "symptom": "线程池任务排队/拒绝，接口超时",
+  "metrics": {
+    "queue_depth": 4850,
+    "active_threads": 200,
+    "max_pool_size": 200,
+    "rejected_task_count_per_min": 320,
+    "p99_latency_ms": 9800
+  },
+  "thread_dump_serial": {
+    "tool": "jstack",
+    "command": "jstack -l 6201 (3 consecutive samples)",
+    "worker_state": "ALL 200 workers BLOCKED",
+    "blocking_call_stack": [
+      "pay.callback.PaymentClient#notify (line 152) - http call without timeout",
+      "pay.callback.PaymentCallbackTask#run (line 89)"
+    ]
+  }
+}

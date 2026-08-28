@@ -1,0 +1,22 @@
+{
+  "incident_id": "INC-LEAK-001",
+  "service": "search-service",
+  "reported_at": "2026-08-27T12:00:00Z",
+  "symptom": "堆内存持续增长不回落",
+  "metrics": {
+    "heap_trend_mb_per_hour": 180,
+    "heap_used_gb": 5.2,
+    "heap_after_full_gc_gb": 4.9,
+    "request_rate_rps": 3200,
+    "gateway_thread_count": 200
+  },
+  "heap_dump_sample": {
+    "tool": "jmap",
+    "command": "jmap -dump:live,format=b,file=search-leak.hprof 6044",
+    "retained_analysis": {
+      "suspicious_holder": "java.lang.ThreadLocal",
+      "reference_chain": "TraceFilter#doFilter -> ThreadLocal<RequestContext> -> HashMap (not removed)",
+      "estimated_retained_mb": 820
+    }
+  }
+}

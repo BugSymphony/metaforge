@@ -1,0 +1,35 @@
+{
+  "incident_id": "INC-CPU-001",
+  "service": "order-service",
+  "reported_at": "2026-08-27T09:30:00Z",
+  "symptom": "CPU 使用率持续 >90%",
+  "metrics": {
+    "cpu_usage_pct": 94.2,
+    "load_average_1m": 12.8,
+    "thread_count": 860,
+    "gc_thread_cpu_pct": 3.1,
+    "user_thread_cpu_pct": 91.0
+  },
+  "thread_dump_sample": {
+    "tool": "jstack",
+    "command": "jstack -l 4821",
+    "hot_threads": [
+      {
+        "name": "pool-3-thread-12",
+        "state": "BLOCKED",
+        "stack_top": "order.service.OrderService#processLine (line 214) - waiting for monitor"
+      },
+      {
+        "name": "pool-3-thread-7",
+        "state": "BLOCKED",
+        "stack_top": "order.service.OrderService#processLine (line 214) - waiting for monitor"
+      },
+      {
+        "name": "pool-3-thread-9",
+        "state": "RUNNABLE",
+        "stack_top": "order.service.InventoryClient#checkStock (line 88)"
+      }
+    ],
+    "blocked_thread_count": 412
+  }
+}

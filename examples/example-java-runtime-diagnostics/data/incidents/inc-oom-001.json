@@ -1,0 +1,23 @@
+{
+  "incident_id": "INC-OOM-001",
+  "service": "user-service",
+  "reported_at": "2026-08-27T11:20:00Z",
+  "symptom": "OutOfMemoryError: Java heap space",
+  "metrics": {
+    "heap_used_gb": 8.7,
+    "heap_max_gb": 8.0,
+    "gc_overhead_ratio_pct": 99.1,
+    "mq_consumer_threads": 16,
+    "avg_message_payload_kb": 640
+  },
+  "heap_histogram_sample": {
+    "tool": "jmap",
+    "command": "jmap -histo:live 5912",
+    "top_entries": [
+      { "class": "byte[]", "instances": 218500, "bytes_pct": 54.0 },
+      { "class": "java.lang.String", "instances": 412000, "bytes_pct": 22.0 },
+      { "class": "com.example.msg.RawMessageHolder", "instances": 12100, "bytes_pct": 14.0 }
+    ]
+  },
+  "exception_stack_tail": "at com.example.msg.MessageConsumer#onMessage (line 41)"
+}
