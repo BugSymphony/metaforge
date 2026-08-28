@@ -93,7 +93,7 @@ opencode run "你是药剂审核 Agent，执行处方审核任务：查处方审
 为 DeepSeek Harness 提供插件（[`integrations/dsh`](./docs/integrations/dsh-plugin.md)），Agent 直接获得 `metaforge_cognition` / `metaforge_resolve` 工具：
 
 ```
-dsh plugin --profile headless add /绝对路径/metaforge/integrations/dsh
+dsh plugin --profile headless add /data/ext/source-8/metaforge/integrations/dsh
 dsh --profile headless "用 metaforge_cognition（BRIEF）查库存盘点任务说明书"
 ```
 
@@ -109,6 +109,7 @@ dsh --profile headless "用 metaforge_cognition（BRIEF）查库存盘点任务�
 | [工业设备预测性维护](./docs/examples/industrial-predictive-maintenance.md) | 两级阈值 + 故障类型判断 + 运行强制规则 |
 | [数据中心机柜巡检](./docs/examples/datacenter-rack-inspection.md) | 三业务对象 + 固件升级策略决策嵌套 |
 | [供应链库存补货](./docs/examples/supply-chain-replenishment.md) | 补货阈值（含等于触发）+ 供应商择优 |
+| [Java 运行时诊断](./docs/examples/java-runtime-diagnostics.md) | **独立 Bundle 垂直领域**（九阶段诊断链路，复用通用元模型） |
 
 ## 文档导航
 
